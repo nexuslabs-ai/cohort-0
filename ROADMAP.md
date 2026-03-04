@@ -1,4 +1,6 @@
-# DesignLens — Roadmap
+# Bob the Builder — Roadmap
+
+*Can we ship it? Yes we can.*
 
 This document defines what gets built as the base, what bugs get planted, and what features are available for contributors to pick up. Everything is managed via GitHub Issues and GitHub Projects.
 
@@ -12,33 +14,38 @@ A working desktop-only app with the minimum functionality needed for the platfor
 
 - Sign up with email and password
 - Log in / log out
+- GitHub OAuth sign-in
 - Google OAuth sign-in
 - Password reset via email
 
-### Boards
+### Build Submission
 
-- Admin can create a board with name, logo, and short description
-- Admin can edit board details
-- Board listing page (home page)
-- Board detail page showing posts within that board
+- Submit a Build with title, description, Build Type, AI tools used, and screenshots
+- Select Build Type (App, Feature, Fix, Automation, Experiment)
+- Select AI tools used from predefined list (multi-select)
+- Image upload (up to 5 screenshots per Build)
+- Optional: live URL and repo URL
+- Edit own Build
+- Delete own Build
+- Build detail page showing full content, screenshots, and AI tools used
 
-### Posts
+### Feed
 
-- Create a post within a board with title, description, and image(s)
-- Image upload (up to 5 images per post)
-- Edit own post
-- Delete own post
-- Post detail page showing full content and images
+- Home page showing a feed of all Builds, newest first
+- Build cards showing title, description preview, screenshot thumbnail, AI tools used, and Build Type badge
+- Filter by Build Type
+- Filter by AI tool
 
-### User Profile
+### Builder Profile
 
-- Profile page showing display name and avatar
-- Edit display name and avatar
-- List of posts created by the user
+- Profile page showing display name, avatar, and bio
+- Edit display name, avatar, and bio
+- List of Builds submitted by the builder
+- Social links (GitHub, Twitter/X, LinkedIn, website)
 
 ### Navigation & Layout
 
-- Global navigation with logo, board listing link, and auth controls
+- Global navigation with logo, feed link, "Submit Build" button, and auth controls
 - Desktop-only layout
 - Consistent page structure across all pages
 
@@ -50,33 +57,33 @@ After the base build is stable and working, bugs are intentionally introduced ac
 
 ### Easy — Visual / CSS
 
-These are isolated to a single component or page. Fixable by reading the component and adjusting Tailwind classes or markup.
+Isolated to a single component or page. Fixable by reading the component and adjusting Tailwind classes or markup.
 
-1. **Board cards have inconsistent spacing** — Some cards in the board listing have different padding/gap than others
-2. **Post title truncation is broken** — Long titles overflow instead of truncating with ellipsis on the board detail page
+1. **Build cards have inconsistent spacing** — Some cards in the feed have different padding/gap than others
+2. **Build title truncation is broken** — Long titles overflow instead of truncating with ellipsis on the feed page
 3. **Navigation logo is not aligned** — Logo and nav links are vertically misaligned
-4. **Image aspect ratios are wrong** — Post images on the detail page stretch instead of maintaining aspect ratio
+4. **Screenshot aspect ratios are wrong** — Build screenshots on the detail page stretch instead of maintaining aspect ratio
 5. **Form input focus states are missing** — Text inputs on login/signup have no visible focus ring
 
 ### Medium — Component Logic
 
-These involve understanding component state, props, or event handling. Require reading 1-2 files.
+Involve understanding component state, props, or event handling. Require reading 1-2 files.
 
-6. **Board logo upload doesn't show preview** — When admin uploads a board logo, no preview appears until after saving
-7. **Post form doesn't clear after submission** — After creating a post, the form fields retain the old values
-8. **Edit post doesn't populate existing data** — Clicking edit on a post opens an empty form instead of pre-filled
-9. **Delete post has no confirmation** — Clicking delete immediately removes the post without asking the user
+6. **AI tools multi-select doesn't deselect** — Clicking a selected AI tool doesn't remove it from selection
+7. **Build form doesn't clear after submission** — After submitting a Build, the form fields retain the old values
+8. **Edit Build doesn't populate existing data** — Clicking edit on a Build opens an empty form instead of pre-filled
+9. **Delete Build has no confirmation** — Clicking delete immediately removes the Build without asking the user
 10. **Auth redirect is broken** — After login, user is sent to home page instead of the page they were trying to visit
 
 ### Hard — Backend / Data
 
-These involve API routes, database queries, or auth logic. Require understanding how frontend and backend connect.
+Involve API routes, database queries, or auth logic. Require understanding how frontend and backend connect.
 
-11. **Posts are not ordered** — Posts on the board detail page appear in random order instead of newest first
-12. **Any logged-in user can edit any post** — Authorization check is missing on the edit API route
-13. **Deleted posts still appear in profile** — The user profile query doesn't filter out deleted posts
-14. **Board archive doesn't work** — Admin clicks archive but the board still shows in the listing
-15. **Image upload fails silently** — When upload fails (e.g., file too large), no error is shown to the user
+11. **Builds are not ordered** — Builds on the feed appear in random order instead of newest first
+12. **Any logged-in user can edit any Build** — Authorization check is missing on the edit API route
+13. **Deleted Builds still appear in profile** — The builder profile query doesn't filter out deleted Builds
+14. **Build Type filter returns wrong results** — Filtering by "Fix" also returns Builds with type "Feature"
+15. **Screenshot upload fails silently** — When upload fails (e.g., file too large), no error is shown to the user
 
 ---
 
@@ -90,11 +97,11 @@ Scoped to 1-2 files. Primarily frontend. Good for a first PR.
 
 | # | Feature | Type | PRD Version |
 |---|---|---|---|
-| F1 | **Add upvoting to posts** — Upvote button on post cards and detail page, one vote per user, toggle to remove vote, display vote count | Fullstack | v1 |
+| F1 | **Add upvoting to Builds** — Upvote button on Build cards and detail page, one vote per user, toggle to remove vote, display vote count | Fullstack | v1 |
 | F2 | **Add dark mode toggle** — Light/dark switch in navigation, persist preference in local storage, respect system default | Frontend | v2 |
-| F3 | **Add copy link to post** — Share button on post detail that copies the post URL to clipboard with toast confirmation | Frontend | v2 |
-| F4 | **Add tags to posts** — Display tags on post cards and detail page from a predefined list, allow selecting tags during post creation | Fullstack | v1 |
-| F5 | **Add loading skeletons** — Skeleton placeholders while boards, posts, and post detail pages are loading | Frontend | — |
+| F3 | **Add copy link to Build** — Share button on Build detail that copies the Build URL to clipboard with toast confirmation | Frontend | v2 |
+| F4 | **Add tech stack tags** — Display tech stack tags on Build cards and detail page, allow selecting tags during Build submission | Fullstack | v1 |
+| F5 | **Add loading skeletons** — Skeleton placeholders while feed, Build detail, and profile pages are loading | Frontend | — |
 | F6 | **Make navigation responsive** — Collapse nav into hamburger menu on mobile, slide-out drawer | Frontend | v1 |
 
 ### Difficulty: Medium
@@ -103,32 +110,34 @@ Spans 2-4 files. May involve both frontend and backend. Requires understanding d
 
 | # | Feature | Type | PRD Version |
 |---|---|---|---|
-| F7 | **Build the comment system** — Add comment on a post, edit/delete own comment, display in chronological order | Fullstack | v1 |
-| F8 | **Build the user settings page** — Account settings (update email, change password), role-based sections visible per role | Fullstack | v1 |
-| F9 | **Add bookmark system** — Bookmark/unbookmark posts, bookmarks tab on user profile | Fullstack | v2 |
-| F10 | **Add search** — Search posts by keyword across all boards, search within a specific board | Fullstack | v2 |
-| F11 | **Filter posts by tag** — Tag filter bar on board detail page, clickable tags, active state | Frontend | v2 |
-| F12 | **Sort posts** — Sort by newest, most upvoted, most discussed on board detail page | Fullstack | v2 |
-| F13 | **Make board detail page responsive** — Post grid adapts to mobile, images stack properly | Frontend | v1 |
-| F14 | **Make post detail page responsive** — Content, images, and comments reflow on mobile | Frontend | v1 |
-| F15 | **Add moderator badge** — Display a badge next to moderator usernames within their board | Frontend | v1 |
+| F7 | **Build the comment system** — Add comment on a Build, edit/delete own comment, display in chronological order | Fullstack | v1 |
+| F8 | **Add featured Builds section** — Admin can feature/unfeature Builds, featured section at top of home feed | Fullstack | v1 |
+| F9 | **Add bookmark system** — Bookmark/unbookmark Builds, bookmarks tab on builder profile | Fullstack | v2 |
+| F10 | **Add search** — Search Builds by keyword across the platform (title, description, AI tools) | Fullstack | v2 |
+| F11 | **Filter Builds by AI tool** — AI tool filter bar on feed page, clickable tool badges, active state, combinable with other filters | Frontend | v1 |
+| F12 | **Sort Builds** — Sort by newest, most upvoted, most discussed on feed page | Fullstack | v1 |
+| F13 | **Make feed page responsive** — Build card grid adapts to mobile, screenshots stack properly | Frontend | v1 |
+| F14 | **Make Build detail page responsive** — Content, screenshots, and comments reflow on mobile | Frontend | v1 |
+| F15 | **Add builder stats to profile** — Total Builds submitted, total upvotes received, join date displayed on profile | Fullstack | v1 |
 
 ### Difficulty: Hard
 
-Spans multiple files and layers (frontend + backend + database). Requires understanding auth, database relationships, or real-time updates.
+Spans multiple files and layers (frontend + backend + database). Requires understanding auth, database relationships, or complex state.
 
 | # | Feature | Type | PRD Version |
 |---|---|---|---|
-| F16 | **Build moderator role and assignment** — Admin can assign/remove moderators per board, moderators can pin/remove posts in their board | Fullstack | v1 |
+| F16 | **Build admin controls** — Admin can manage AI tools list, manage Build Types, manage tech stack tags, remove any Build or comment | Fullstack | v1 |
 | F17 | **Build threaded comments** — Reply to a comment (one level nesting), visual indentation, collapse/expand threads | Fullstack | v2 |
-| F18 | **Build notification system** — In-app notifications for comments on your post and replies to your comments, bell icon with unread count, mark as read | Fullstack | v2 |
-| F19 | **Add rich text editor** — Markdown support in post descriptions and comments with preview | Frontend | v2 |
-| F20 | **Build board request system** — Members suggest new boards, others upvote requests, admins approve/dismiss | Fullstack | v3 |
-| F21 | **Add Open Graph metadata** — Dynamic OG tags per post (title, description, image) for social sharing previews | Backend | v2 |
-| F22 | **Build user reputation system** — Score based on upvotes received, reputation badge on profile, tier labels | Fullstack | v3 |
-| F23 | **Build collections** — Create named collections of posts, add/remove posts, public and shareable | Fullstack | v3 |
-| F24 | **Build follow system** — Follow boards and users, personalized feed based on follows | Fullstack | v3 |
-| F25 | **Build report and moderation queue** — Report posts/comments, reports go to board moderator, escalate to admin, moderation log | Fullstack | v3 |
+| F18 | **Build notification system** — In-app notifications for comments on your Build, replies to your comments, and when your Build is featured; bell icon with unread count, mark as read | Fullstack | v2 |
+| F19 | **Add rich text editor** — Markdown support in Build descriptions and comments with preview, code block syntax highlighting | Frontend | v2 |
+| F20 | **Build the Build Story feature** — Optional long-form section on a Build for process breakdown, prompt snippets, AI conversation screenshots | Fullstack | v2 |
+| F21 | **Add Open Graph metadata** — Dynamic OG tags per Build (title, description, screenshot) for social sharing previews on Twitter and LinkedIn | Backend | v2 |
+| F22 | **Build the Weekly Spotlight** — Weekly cycle grouping, "This Week's Top Builds" section, weekly archive, weekly leaderboard | Fullstack | v3 |
+| F23 | **Build builder reputation system** — Score based on upvotes received, reputation badge on profile, tier labels (Newcomer → Legend) | Fullstack | v3 |
+| F24 | **Build collections** — Create named collections of Builds, add/remove Builds, public and shareable | Fullstack | v3 |
+| F25 | **Build follow system** — Follow builders and tags, personalized "Following" feed tab | Fullstack | v3 |
+| F26 | **Build builder streaks** — Track consecutive weeks of shipping, streak count and badge on profile | Fullstack | v3 |
+| F27 | **Build report and moderation queue** — Report Builds/comments, admin review queue, remove or dismiss, temporary bans | Fullstack | v3 |
 
 ---
 
@@ -147,8 +156,8 @@ Spans multiple files and layers (frontend + backend + database). Requires unders
 | `backend` | API/database work only |
 | `fullstack` | Both frontend and backend |
 | `v1` | Core PRD feature |
-| `v2` | Enhanced PRD feature |
-| `v3` | Scale PRD feature |
+| `v2` | Engage PRD feature |
+| `v3` | Grow PRD feature |
 
 ### Issue Format
 
@@ -168,7 +177,7 @@ Every issue (bug or feature) follows a consistent format:
 
 ### Branch Naming
 
-- Bugs: `fix/short-description` (e.g., `fix/board-card-spacing`)
+- Bugs: `fix/short-description` (e.g., `fix/build-card-spacing`)
 - Features: `feat/short-description` (e.g., `feat/comment-system`)
 
 ### PR Requirements
