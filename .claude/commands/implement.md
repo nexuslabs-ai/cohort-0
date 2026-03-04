@@ -46,6 +46,14 @@ Parse `$ARGUMENTS` for:
                   │
                   ▼
 ┌─────────────────────────────────────┐
+│           Branch Setup                  │
+│  • Check/create branch for task         │
+│  • Ask user for base branch             │
+│  • Checkout working branch              │
+└─────────────────┬───────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
 │          Spawn SDE2 Agent               │
 │  • Use Task tool with subagent_type     │
 │  • Pass context in prompt               │
@@ -73,6 +81,12 @@ Parse `$ARGUMENTS` for:
 ┌─────────────────────────────────────┐
 │           Detect Context                │
 │  • Same detection as above               │
+└─────────────────┬───────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│           Branch Setup                  │
+│  • Same branch setup as above           │
 └─────────────────┬───────────────────────┘
                   │
                   ▼
@@ -131,7 +145,52 @@ Parse `$ARGUMENTS` for:
    - Relevant rules based on expected file changes
    - Any constraints or preferences mentioned
 
-### Phase 2: Spawn Agents
+### Phase 2: Branch Setup
+
+1. **Check current branch:**
+
+   ```bash
+   git branch --show-current
+   ```
+
+2. **Derive branch name from context:**
+
+   - If GitHub issue: `{username}/issue-{number}-{slugified-title}`
+     ```
+     Example: #42 "Add question generation" → prasad/issue-42-add-question-generation
+     ```
+   - If spec file: `{username}/{slugified-filename}`
+   - If conversation: Ask user for a branch name
+
+3. **Check if branch already exists:**
+
+   ```bash
+   git branch --list "{branch_name}"
+   git ls-remote --heads origin "{branch_name}"
+   ```
+
+   - If branch exists locally → ask user: "Branch `{branch_name}` already exists. Checkout existing branch or create a new one?"
+   - If branch exists only on remote → fetch and checkout
+
+4. **Ask user for base branch:**
+
+   - Present current branch and `main` as options
+   - Default: `main`
+   - "Which branch should `{branch_name}` be created from?"
+
+5. **Create and checkout branch:**
+
+   ```bash
+   git checkout -b {branch_name} {base_branch}
+   ```
+
+6. **Confirm to user:**
+
+   ```
+   ✓ On branch: {branch_name} (based on {base_branch})
+   ```
+
+### Phase 3: Spawn Agents
 
 **If `--with-architect` flag present:**
 
@@ -199,7 +258,7 @@ The SDE2 agent will:
 - Implement phase by phase
 - Verify with tests
 
-### Phase 3: Report Completion
+### Phase 4: Report Completion
 
 After implementation is complete, output:
 
@@ -253,6 +312,8 @@ After implementation is complete, output:
 | ----------------------- | ----------------------------------- |
 | GitHub issue not found  | Ask user to verify issue number     |
 | Spec file not found     | Ask user to verify file path        |
+| Branch already exists   | Ask user: checkout existing or new  |
+| Uncommitted changes     | Ask user to stash or commit first   |
 | Unclear requirements    | Ask user for clarification          |
 | Architect plan rejected | Revise plan or ask for guidance     |
 | Implementation blocked  | Ask user for decision (no patches!) |
