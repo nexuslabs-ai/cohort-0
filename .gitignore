@@ -52,3 +52,6 @@ supabase/.temp/
 
 # OS
 Thumbs.db
+
+# docs
+reports/
