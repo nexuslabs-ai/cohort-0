@@ -1,6 +1,7 @@
 ---
 name: pr-fix
 description: Fix issues identified in PR reviews, addressing blocking and minor concerns. Use after receiving PR review feedback or when PR has requested changes.
+model: claude-opus-4-6
 allowed-tools:
   - Read
   - Grep
