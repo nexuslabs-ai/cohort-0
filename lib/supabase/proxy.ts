@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { env } from "@/lib/env";
 
 /**
  * Refreshes the user's auth session on every request and keeps
@@ -19,8 +20,8 @@ export async function updateSession(request: NextRequest) {
   });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll() {
@@ -56,8 +57,10 @@ export async function updateSession(request: NextRequest) {
   // supabase.auth.getClaims(). A simple mistake could make it very hard
   // to debug issues with users being randomly logged out.
   //
-  // getClaims() validates the JWT locally (no network call), unlike
-  // getUser() which hits the Supabase Auth server on every request.
+  // getClaims() validates the JWT — locally with asymmetric keys (RS256),
+  // or via a server call with symmetric keys (HS256, the Supabase default).
+  // We use getClaims() here instead of getUser() so the proxy automatically
+  // becomes zero-cost if the project switches to asymmetric keys later.
   await supabase.auth.getClaims();
 
   return supabaseResponse;
