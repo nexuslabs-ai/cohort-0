@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { clientEnv } from "@/lib/env";
+import { clientEnv } from "@/lib/env.client";
 
 /**
  * Refreshes the user's auth session on every request and keeps
