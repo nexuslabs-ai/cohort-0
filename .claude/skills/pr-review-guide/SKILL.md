@@ -1,5 +1,5 @@
 ---
-name: pr-review
+name: pr-review-guide
 description: Review pull requests for code quality and architecture. Use when reviewing PRs, checking code changes, or evaluating pull requests.
 model: claude-opus-4-6
 allowed-tools:
@@ -9,7 +9,7 @@ allowed-tools:
   - Bash(git:*, gh:*)
   - WebSearch
   - WebFetch
-user-invocable: true
+user-invocable: false
 ---
 
 # PR Review

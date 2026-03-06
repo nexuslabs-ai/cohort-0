@@ -1,5 +1,5 @@
 ---
-name: implement
+name: implement-guide
 description: Implement features and tasks with production-quality code. Use when implementing features, building components, or any task requiring code implementation from any context source (GitHub issues, markdown specs, or conversation).
 model: claude-opus-4-6
 allowed-tools:
@@ -11,7 +11,7 @@ allowed-tools:
   - Write
   - WebSearch
   - WebFetch
-user-invocable: true
+user-invocable: false
 ---
 
 # Implement

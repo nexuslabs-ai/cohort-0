@@ -6,7 +6,7 @@ Fix issues identified in PR reviews using the SDE2 agent.
 
 | Agent                     | Skill                               | Purpose           |
 | ------------------------- | ----------------------------------- | ----------------- |
-| [SDE2](../agents/sde2.md) | [pr-fix](../skills/pr-fix/SKILL.md) | Fix review issues |
+| [SDE2](../agents/sde2.md) | [pr-fix-guide](../skills/pr-fix-guide/SKILL.md) | Fix review issues |
 
 ## Required Input
 
@@ -99,7 +99,7 @@ Task(
   {list of files changed in PR}
 
   ## Instructions
-  1. Read the pr-fix skill at `.claude/skills/pr-fix/SKILL.md`
+  1. Read the pr-fix-guide skill at `.claude/skills/pr-fix-guide/SKILL.md`
   2. Load appropriate rules based on changed files
   3. Fix blocking issues first, then minor issues
   4. Work through one fix at a time with summaries

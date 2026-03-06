@@ -9,7 +9,7 @@ allowed-tools:
   - Bash(git:*, gh:*)
   - WebSearch
   - WebFetch
-user-invocable: true
+user-invocable: false
 ---
 
 # PR Review Follow-up

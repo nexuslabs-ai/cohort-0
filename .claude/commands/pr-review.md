@@ -6,8 +6,8 @@ Comprehensive code review using dual-agent analysis. Auto-detects context based 
 
 | Agent                                                   | Skill                                     | Perspective                  |
 | ------------------------------------------------------- | ----------------------------------------- | ---------------------------- |
-| [Principal Architect](../agents/principal-architect.md) | [pr-review](../skills/pr-review/SKILL.md) | Architecture & system design |
-| [SDE2](../agents/sde2.md)                               | [pr-review](../skills/pr-review/SKILL.md) | Code quality & correctness   |
+| [Principal Architect](../agents/principal-architect.md) | [pr-review-guide](../skills/pr-review-guide/SKILL.md) | Architecture & system design |
+| [SDE2](../agents/sde2.md)                               | [pr-review-guide](../skills/pr-review-guide/SKILL.md) | Code quality & correctness   |
 
 ## Required Input
 
@@ -95,7 +95,7 @@ Task(
   - Issue requirements: {from GitHub issue if available}
 
   ## Instructions
-  1. Read the pr-review skill at `.claude/skills/pr-review/SKILL.md`
+  1. Read the pr-review-guide skill at `.claude/skills/pr-review-guide/SKILL.md`
   2. Focus on: system design, scalability, data model, security boundaries
   3. Use Challenge & Propose format for issues
   4. Output review following the skill's format
@@ -128,7 +128,7 @@ Task(
   - Issue requirements: {from GitHub issue if available}
 
   ## Instructions
-  1. Read the pr-review skill at `.claude/skills/pr-review/SKILL.md`
+  1. Read the pr-review-guide skill at `.claude/skills/pr-review-guide/SKILL.md`
   2. Focus on: type safety, error handling, code structure, testability
   3. Use Challenge & Propose format for issues
   4. Output review following the skill's format

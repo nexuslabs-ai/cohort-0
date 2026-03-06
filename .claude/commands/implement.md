@@ -7,7 +7,7 @@ Implement features and tasks using the SDE2 agent, with optional architectural g
 | Agent                                                   | Skill                                         | When Used                         |
 | ------------------------------------------------------- | --------------------------------------------- | --------------------------------- |
 | [Principal Architect](../agents/principal-architect.md) | [design-plan](../skills/design-plan/SKILL.md) | Only with `--with-architect` flag |
-| [SDE2](../agents/sde2.md)                               | [implement](../skills/implement/SKILL.md)     | Always                            |
+| [SDE2](../agents/sde2.md)                               | [implement-guide](../skills/implement-guide/SKILL.md)     | Always                            |
 
 ## Input (Optional)
 
@@ -242,7 +242,7 @@ Task(
   - Architect Plan: {the approved plan}
 
   ## Instructions
-  1. Read the implement skill at `.claude/skills/implement/SKILL.md`
+  1. Read the implement-guide skill at `.claude/skills/implement-guide/SKILL.md`
   2. Follow the workflow (gather → explore → plan → implement → verify)
   3. If architect plan exists, follow its phases
   4. Implement phase by phase with summaries

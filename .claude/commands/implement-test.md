@@ -6,7 +6,7 @@ Implement tests using the Tester agent, focusing on result validation over code 
 
 | Agent                         | Skill                                               | When Used |
 | ----------------------------- | --------------------------------------------------- | --------- |
-| [Tester](../agents/tester.md) | [implement-test](../skills/implement-test/SKILL.md) | Always    |
+| [Tester](../agents/tester.md) | [implement-test-guide](../skills/implement-test-guide/SKILL.md) | Always    |
 
 ## Input (Optional)
 
@@ -106,7 +106,7 @@ Task(
   - Target: {what needs tests}
 
   ## Instructions
-  1. Read the implement-test skill at `.claude/skills/implement-test/SKILL.md`
+  1. Read the implement-test-guide skill at `.claude/skills/implement-test-guide/SKILL.md`
   2. Understand the code to be tested
   3. Design test strategy (fixtures, mocks, assertions)
   4. Create test plan (TodoWrite)

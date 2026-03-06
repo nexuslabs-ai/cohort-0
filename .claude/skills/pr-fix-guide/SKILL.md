@@ -1,5 +1,5 @@
 ---
-name: pr-fix
+name: pr-fix-guide
 description: Fix issues identified in PR reviews, addressing blocking and minor concerns. Use after receiving PR review feedback or when PR has requested changes.
 model: claude-opus-4-6
 allowed-tools:
@@ -9,7 +9,7 @@ allowed-tools:
   - Bash
   - Edit
   - Write
-user-invocable: true
+user-invocable: false
 ---
 
 # PR Fix

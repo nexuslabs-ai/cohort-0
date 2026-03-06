@@ -6,7 +6,7 @@ Analyze dependencies for updates, breaking changes, deprecations, and migration 
 
 | Agent                         | Skill                                           | Purpose                    |
 | ----------------------------- | ----------------------------------------------- | -------------------------- |
-| [DevOps](../agents/devops.md) | [analyze-deps](../skills/analyze-deps/SKILL.md) | Dependency analysis report |
+| [DevOps](../agents/devops.md) | [analyze-deps-guide](../skills/analyze-deps-guide/SKILL.md) | Dependency analysis report |
 
 ## Input
 
@@ -101,7 +101,7 @@ Task(
   - Mode: {single-package | workspace | all-workspaces}
 
   ## Instructions
-  1. Read the analyze-deps skill at `.claude/skills/analyze-deps/SKILL.md`
+  1. Read the analyze-deps-guide skill at `.claude/skills/analyze-deps-guide/SKILL.md`
   2. Follow the 5-phase workflow:
      - Resolve package.json(s)
      - Query npm registry

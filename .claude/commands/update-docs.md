@@ -6,7 +6,7 @@ Update documentation based on codebase changes using the Technical Writer agent.
 
 | Agent                                             | Skill                                         | Purpose                         |
 | ------------------------------------------------- | --------------------------------------------- | ------------------------------- |
-| [Technical Writer](../agents/technical-writer.md) | [update-docs](../skills/update-docs/SKILL.md) | Keep docs accurate and complete |
+| [Technical Writer](../agents/technical-writer.md) | [update-docs-guide](../skills/update-docs-guide/SKILL.md) | Keep docs accurate and complete |
 
 ## Input (Optional)
 
@@ -82,7 +82,7 @@ Task(
   {scope description - recent changes / specific path / full audit}
 
   ## Instructions
-  1. Read the update-docs skill at `.claude/skills/update-docs/SKILL.md`
+  1. Read the update-docs-guide skill at `.claude/skills/update-docs-guide/SKILL.md`
   2. Follow the workflow phases:
      - Phase 1: Analyze changes (git diff for recent, or specified scope)
      - Phase 2: Discover affected documentation files
