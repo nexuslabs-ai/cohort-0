@@ -75,6 +75,8 @@ If no input provided, ask the user for the PR number.
 
 **IMPORTANT: Spawn both agents simultaneously using the Agent tool. Do NOT execute the reviews yourself and do NOT wait for one to finish before spawning the other.**
 
+Each agent has a distinct focus lane — keep to it to avoid duplicate inline comments.
+
 ```
 // Spawn both at the same time:
 
@@ -96,10 +98,22 @@ Agent(
   - Loaded rules: {rules loaded based on files changed}
   - Issue requirements: {from GitHub issue if available}
 
+  ## Your Focus (ONLY these areas — do not overlap with SDE2)
+  - Module boundaries and folder structure
+  - Data model design and type system decisions
+  - Security boundaries (auth patterns, server-only access)
+  - Scalability concerns (N+1 queries, computed fields, caching)
+  - API contract design (route structure, response shapes)
+  - Stub/placeholder routes and their production readiness
+
+  ## Out of Scope for You
+  Do NOT flag: deprecated library APIs, code style, naming, redundant code patterns.
+  Those are SDE2's lane.
+
   ## Instructions
-  1. Focus on: system design, scalability, data model, security boundaries
+  1. Focus exclusively on your lane above
   2. Output review following the skill's format
-  3. Return the review body and any inline comments
+  3. Return the review body and any inline comments — DO NOT post to GitHub yourself
   """
 )
 
@@ -121,15 +135,52 @@ Agent(
   - Loaded rules: {rules loaded based on files changed}
   - Issue requirements: {from GitHub issue if available}
 
+  ## Your Focus (ONLY these areas — do not overlap with Architect)
+  - Type safety and TypeScript correctness
+  - Deprecated or incorrect library API usage (Zod, Next.js, etc.)
+  - Error handling completeness
+  - Redundant or overly complex code patterns
+  - Naming and readability for the target audience (design students)
+  - Edge cases and potential runtime bugs
+
+  ## Out of Scope for You
+  Do NOT flag: folder structure, data model design, scalability, auth patterns.
+  Those are the Architect's lane.
+
   ## Instructions
-  1. Focus on: type safety, error handling, code structure, testability
+  1. Focus exclusively on your lane above
   2. Output review following the skill's format
-  3. Return the review body and any inline comments
+  3. Return the review body and any inline comments — DO NOT post to GitHub yourself
   """
 )
 ```
 
-Wait for both to return, then proceed to post reviews.
+Wait for both to return, then proceed to Phase 4.
+
+### Phase 4: Consolidate Inline Comments
+
+Before posting, deduplicate inline comments across both agent results to prevent the same file:line from getting two comments.
+
+**Steps:**
+
+1. Collect all inline comments from both agents into a flat list, tagged by source:
+   ```
+   architect_comments = [{path, line, body}, ...]
+   sde2_comments      = [{path, line, body}, ...]
+   ```
+
+2. Find overlapping comments — where both agents commented on the same `path:line`.
+
+3. For each overlap, **keep only one**:
+   - If the comments cover different aspects, merge them into a single comment body (e.g. "**Architecture:** ... \n\n**Code quality:** ...")
+   - If one is more specific/actionable, keep that one and discard the other
+   - Assign the merged/kept comment to whichever agent's review body it fits best
+
+4. The result is two non-overlapping comment sets:
+   - `architect_final_comments` — Architect inline comments with no duplicates
+   - `sde2_final_comments` — SDE2 inline comments with no duplicates
+
+5. Proceed to Phase 5 with these deduplicated sets.
 
 ### Phase 5: Context-Specific Checks
 
@@ -163,6 +214,8 @@ Review against:
 
 ### Phase 6: Post Reviews
 
+Use `architect_final_comments` and `sde2_final_comments` from Phase 4 — never the raw agent output directly.
+
 1. **Post Principal Architect review:**
 
    ```bash
@@ -172,9 +225,7 @@ Review against:
    {
    "body": "{Principal Architect review from skill}",
    "event": "COMMENT",
-   "comments": [
-    {"path": "path/to/file", "line": 42, "body": "Issue description"}
-   ]
+   "comments": {architect_final_comments}
    }
    EOF
    ```
@@ -188,14 +239,12 @@ Review against:
    {
    "body": "{SDE2 review from skill}",
    "event": "{APPROVE|COMMENT|REQUEST_CHANGES}",
-   "comments": [
-    {"path": "path/to/file", "line": 42, "body": "Issue description"}
-   ]
+   "comments": {sde2_final_comments}
    }
    EOF
    ```
 
-   **Verdict logic:**
+   **Verdict logic** (based on combined findings from both agents):
    | Condition | Event |
    |-----------|-------|
    | No blocking issues in either review | `APPROVE` |
@@ -208,14 +257,7 @@ Review against:
 
 When developer pushes changes after initial review, use follow-up mode to focus on what changed.
 
-### Agent Selection (Smart)
-
-| Condition                                  | Agents Used      |
-| ------------------------------------------ | ---------------- |
-| Only code fixes (same files modified)      | SDE2 only        |
-| New files added                            | SDE2 + Architect |
-| Significant structural changes             | SDE2 + Architect |
-| Previous review had architectural concerns | SDE2 + Architect |
+Both agents always run. Each agent covers the same focus lane as in the full review — Architect owns structure and architecture, SDE2 owns code quality and correctness.
 
 ### Phase F1: Get PR & Previous Reviews
 
@@ -234,10 +276,9 @@ When developer pushes changes after initial review, use follow-up mode to focus 
    ```
 
 4. **Parse previous review data:**
-   - Extract issues raised (blocking ❌ and minor ⚠️)
+   - Extract issues raised (blocking ❌ and minor ⚠️), separated by agent (Architect vs SDE2)
    - Note which files had comments
    - Get timestamp of last review
-   - Check if Architect raised architectural concerns
 
 ### Phase F2: Identify Changes Since Last Review
 
@@ -255,12 +296,7 @@ When developer pushes changes after initial review, use follow-up mode to focus 
    gh pr diff {pr_number}
    ```
 
-3. **Determine if Architect review needed:**
-   - Check for new files (not in previous review)
-   - Check for significant structural changes (new exports, renamed files)
-   - Check if previous Architect review had concerns
-
-4. **Read files that were:**
+3. **Read files that were:**
    - Mentioned in previous review comments
    - Modified in commits since last review
 
@@ -278,65 +314,88 @@ For each issue from the previous review:
    | ⚠️ Partially Fixed | Attempted but incomplete          |
    | 🔄 Changed         | Code changed, needs re-evaluation |
 
-### Phase F4: Review New Changes
+### Phase F4: Spawn Both Agents in Parallel
 
-**SDE2 Review (Always):**
+**IMPORTANT: Spawn both agents simultaneously. Do NOT execute the reviews yourself and do NOT wait for one before spawning the other.**
 
-**IMPORTANT: You MUST use the Agent tool to spawn the SDE2 agent. Do NOT execute the review yourself.**
+Each agent covers the same focus lane as the full review.
 
 ```
 Agent(
-  subagent_type: "sde2",
-  description: "Follow-up review for PR",
+  subagent_type: "principal-architect",
+  description: "Follow-up architecture review for PR",
   prompt: """
-  Follow-up review for PR #{pr_number} after changes.
+  Follow-up architecture review for PR #{pr_number} after changes.
 
   ## PR Details
   - Title: {pr_title}
   - Commits since last review: {commit list}
 
-  ## Previous Issues
-  {list of issues from previous review with file:line}
+  ## Previous Architectural Issues
+  {list of Architect issues from previous review with file:line}
 
   ## Files Modified Since Last Review
   {list of changed files}
 
+  ## Your Focus (same as full review — ONLY these areas)
+  - Module boundaries and folder structure
+  - Data model design and type system decisions
+  - Security boundaries (auth patterns, server-only access)
+  - Scalability concerns (N+1 queries, computed fields, caching)
+  - API contract design (route structure, response shapes)
+  - Stub/placeholder routes and their production readiness
+
   ## Instructions
   1. Review ONLY files modified since last review
-  2. Check if previous issues are fixed
-  3. Look for new issues in the changes
+  2. Check if previous architectural issues are fixed
+  3. Look for new architectural issues in the changes
   4. Don't re-review unchanged code
+  5. Return findings — DO NOT post to GitHub yourself
   """
 )
-```
 
-**Architect Review (If Triggered):**
-
-Only spawn if: new files added, significant structural changes, or previous Architect review had concerns.
-
-```
 Agent(
-  subagent_type: "principal-architect",
-  description: "Follow-up architecture review",
+  subagent_type: "sde2",
+  description: "Follow-up code quality review for PR",
   prompt: """
-  Follow-up architecture review for PR #{pr_number}.
+  Follow-up code quality review for PR #{pr_number} after changes.
 
-  ## Why Architect Review Triggered
-  {reason: new files / structural changes / previous concerns}
+  ## PR Details
+  - Title: {pr_title}
+  - Commits since last review: {commit list}
 
-  ## Previous Architectural Concerns
-  {list from previous Architect review if any}
+  ## Previous SDE2 Issues
+  {list of SDE2 issues from previous review with file:line}
 
-  ## New/Changed Files
-  {list of new or structurally changed files}
+  ## Files Modified Since Last Review
+  {list of changed files}
+
+  ## Your Focus (same as full review — ONLY these areas)
+  - Type safety and TypeScript correctness
+  - Deprecated or incorrect library API usage (Zod, Next.js, etc.)
+  - Error handling completeness
+  - Redundant or overly complex code patterns
+  - Naming and readability for the target audience (design students)
+  - Edge cases and potential runtime bugs
 
   ## Instructions
-  1. Review new files for architectural fit
-  2. Verify previous architectural concerns addressed
-  3. Check structural changes for system impact
+  1. Review ONLY files modified since last review
+  2. Check if previous SDE2 issues are fixed
+  3. Look for new code quality issues in the changes
+  4. Don't re-review unchanged code
+  5. Return findings — DO NOT post to GitHub yourself
   """
 )
 ```
+
+Wait for both to return, then proceed to Phase F5.
+
+### Phase F5: Consolidate & Post Follow-up Reviews
+
+Deduplicate inline comments across both agents (same as Phase 4 in full review mode), then post two separate reviews:
+
+1. **Post Principal Architect follow-up review**
+2. **Post SDE2 follow-up review**
 
 ### Phase F5: Post Follow-up Review
 
