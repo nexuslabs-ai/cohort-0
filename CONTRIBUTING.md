@@ -4,9 +4,9 @@ Welcome! This guide explains how to set up the project depending on what you're 
 
 ## Which setup do I need?
 
-| I'm working on... | Setup |
-|---|---|
-| UI, components, pages | Option A — Frontend setup (no Docker) |
+| I'm working on...                  | Setup                                             |
+| ---------------------------------- | ------------------------------------------------- |
+| UI, components, pages              | Option A — Frontend setup (no Docker)             |
 | Database, migrations, RLS policies | Option B — Local Supabase setup (Docker required) |
 
 ---
@@ -100,45 +100,46 @@ Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
 ```bash
 # One-time: authenticate with GitHub Container Registry
-yarn docs:login
+npm run docs:login
 
 # Pull the pre-indexed image and start the server
-yarn docs:pull
-yarn docs:start
+npm run docs:pull
+npm run docs:start
 ```
 
 The server runs at `http://localhost:6280`. Claude Code connects to it automatically via `.mcp.json` — no further setup needed.
 
-To stop: `yarn docs:stop`
+To stop: `npm run docs:stop`
 
 When the maintainer publishes an update, pull and restart:
+
 ```bash
-yarn docs:pull && yarn docs:stop && yarn docs:start
+npm run docs:pull && npm run docs:stop && npm run docs:start
 ```
 
 ### For the maintainer (managing docs)
 
 ```bash
 # Start the local server for indexing (opens web UI at http://localhost:6280)
-yarn docs:serve
+npm run docs:serve
 
 # Add or update libraries via the web UI, then publish for the team
-yarn docs:publish   # export DB → build Docker image → push to GHCR
+npm run docs:publish   # export DB → build Docker image → push to GHCR
 ```
 
 ### Scripts reference
 
-| Command | Role | What it does |
-|---------|------|-------------|
-| `docs:serve` | Maintainer | Start local server for indexing/managing libraries |
-| `docs:export` | Maintainer | Copy indexed DB into `docs-mcp/` for building |
-| `docs:build` | Maintainer | Build Docker image with baked-in DB |
-| `docs:login` | Both | Authenticate with GitHub Container Registry |
-| `docs:push` | Maintainer | Push image to GHCR |
-| `docs:publish` | Maintainer | All-in-one: export + build + push |
-| `docs:pull` | Teammate | Pull latest image from GHCR |
-| `docs:start` | Teammate | Start the docs MCP server on `localhost:6280` |
-| `docs:stop` | Teammate | Stop and remove the container |
+| Command        | Role       | What it does                                       |
+| -------------- | ---------- | -------------------------------------------------- |
+| `docs:serve`   | Maintainer | Start local server for indexing/managing libraries |
+| `docs:export`  | Maintainer | Copy indexed DB into `docs-mcp/` for building      |
+| `docs:build`   | Maintainer | Build Docker image with baked-in DB                |
+| `docs:login`   | Both       | Authenticate with GitHub Container Registry        |
+| `docs:push`    | Maintainer | Push image to GHCR                                 |
+| `docs:publish` | Maintainer | All-in-one: export + build + push                  |
+| `docs:pull`    | Teammate   | Pull latest image from GHCR                        |
+| `docs:start`   | Teammate   | Start the docs MCP server on `localhost:6280`      |
+| `docs:stop`    | Teammate   | Stop and remove the container                      |
 
 ---
 
