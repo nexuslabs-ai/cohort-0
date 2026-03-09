@@ -4,15 +4,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getUser } from "@/lib/auth";
+import { MimeExtension } from "@/lib/constants/mime-types";
 import { createClient } from "@/lib/supabase/server";
 import { uploadRequestSchema } from "@/lib/validations/upload";
-
-const CONTENT_TYPE_TO_EXTENSION: Record<string, string> = {
-  "image/png": ".png",
-  "image/jpeg": ".jpg",
-  "image/gif": ".gif",
-  "image/webp": ".webp",
-};
 
 const BUCKET_NAME = "build-screenshots";
 
@@ -40,7 +34,7 @@ export async function POST(request: Request) {
   }
 
   const { contentType, buildId } = result.data;
-  const extension = CONTENT_TYPE_TO_EXTENSION[contentType];
+  const extension = MimeExtension[contentType];
   const generatedFileName = `${crypto.randomUUID()}${extension}`;
   const path = `${user.id}/${buildId}/${generatedFileName}`;
 
