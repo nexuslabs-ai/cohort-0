@@ -31,10 +31,17 @@ const clientEnvSchema = z.object({
       1,
       "Missing NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY — copy .env.local.example to .env.local",
     ),
+  NEXT_PUBLIC_SITE_URL: z
+    .string()
+    .min(
+      1,
+      "Missing NEXT_PUBLIC_SITE_URL — copy .env.local.example to .env.local",
+    ),
 });
 
 export const clientEnv = clientEnvSchema.parse({
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
 });
