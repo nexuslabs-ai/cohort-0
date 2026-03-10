@@ -1,6 +1,6 @@
-import "server-only";
+import 'server-only';
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from '@/lib/supabase/server';
 
 /**
  * Fetches all AI tools, ordered alphabetically by name.
@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function getAiTools() {
   const supabase = await createClient();
 
-  return supabase.from("ai_tools").select("*").order("name");
+  return supabase.from('ai_tools').select('*').order('name');
 }
 
 /**
@@ -19,11 +19,11 @@ export async function getAiToolsByBuildId(buildId: string) {
   const supabase = await createClient();
 
   return supabase
-    .from("build_ai_tools")
+    .from('build_ai_tools')
     .select(
       `
       ...ai_tools(*)
     `
     )
-    .eq("build_id", buildId);
+    .eq('build_id', buildId);
 }

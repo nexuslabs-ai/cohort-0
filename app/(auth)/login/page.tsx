@@ -1,8 +1,8 @@
-import Link from "next/link";
+import Link from 'next/link';
 
-import { AuthErrorAlert } from "@/components/auth/auth-error-alert";
-import { OAuthButtons } from "@/components/auth/oauth-buttons";
-import { Routes } from "@/lib/constants/routes";
+import { AuthErrorAlert } from '@/components/auth/auth-error-alert';
+import { OAuthButtons } from '@/components/auth/oauth-buttons';
+import { Routes } from '@/lib/constants/routes';
 
 export default async function LoginPage({
   searchParams,
@@ -25,7 +25,7 @@ export default async function LoginPage({
       <OAuthButtons />
 
       <p className="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{" "}
+        Don&apos;t have an account?{' '}
         <Link
           href={Routes.SIGNUP}
           className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/80"

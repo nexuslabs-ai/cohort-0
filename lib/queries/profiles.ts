@@ -1,7 +1,7 @@
-import "server-only";
+import 'server-only';
 
-import { createClient } from "@/lib/supabase/server";
-import type { ProfileUpdate } from "@/types";
+import { createClient } from '@/lib/supabase/server';
+import type { ProfileUpdate } from '@/types';
 
 /**
  * Fetches a single profile by its ID.
@@ -9,7 +9,7 @@ import type { ProfileUpdate } from "@/types";
 export async function getProfileById(id: string) {
   const supabase = await createClient();
 
-  return supabase.from("profiles").select("*").eq("id", id).single();
+  return supabase.from('profiles').select('*').eq('id', id).single();
 }
 
 /**
@@ -18,10 +18,5 @@ export async function getProfileById(id: string) {
 export async function updateProfile(id: string, data: ProfileUpdate) {
   const supabase = await createClient();
 
-  return supabase
-    .from("profiles")
-    .update(data)
-    .eq("id", id)
-    .select()
-    .single();
+  return supabase.from('profiles').update(data).eq('id', id).select().single();
 }

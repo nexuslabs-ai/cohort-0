@@ -1,7 +1,9 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import { clientEnv } from "@/lib/env.client";
-import type { Database } from "./database.types";
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+
+import { clientEnv } from '@/lib/env.client';
+
+import type { Database } from './database.types';
 
 /**
  * Creates a Supabase client for use on the server (Server Components,

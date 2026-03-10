@@ -1,7 +1,7 @@
-import "server-only";
+import 'server-only';
 
-import { createClient } from "@/lib/supabase/server";
-import type { CommentInsert } from "@/types";
+import { createClient } from '@/lib/supabase/server';
+import type { CommentInsert } from '@/types';
 
 /**
  * Fetches all comments for a given build, including the author profile.
@@ -11,15 +11,15 @@ export async function getCommentsByBuildId(buildId: string) {
   const supabase = await createClient();
 
   return supabase
-    .from("comments")
+    .from('comments')
     .select(
       `
       *,
       profile:profiles(*)
     `
     )
-    .eq("build_id", buildId)
-    .order("created_at", { ascending: true });
+    .eq('build_id', buildId)
+    .order('created_at', { ascending: true });
 }
 
 /**
@@ -28,7 +28,7 @@ export async function getCommentsByBuildId(buildId: string) {
 export async function createComment(data: CommentInsert) {
   const supabase = await createClient();
 
-  return supabase.from("comments").insert(data).select().single();
+  return supabase.from('comments').insert(data).select().single();
 }
 
 /**
@@ -38,5 +38,5 @@ export async function createComment(data: CommentInsert) {
 export async function deleteComment(id: string) {
   const supabase = await createClient();
 
-  return supabase.from("comments").delete().eq("id", id).select().single();
+  return supabase.from('comments').delete().eq('id', id).select().single();
 }

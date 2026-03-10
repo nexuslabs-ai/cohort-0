@@ -1,6 +1,6 @@
-import "server-only";
+import 'server-only';
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from '@/lib/supabase/server';
 
 /**
  * Toggles an upvote for a build by a user.
@@ -15,10 +15,10 @@ export async function toggleUpvote(buildId: string, userId: string) {
 
   // Check if the upvote already exists
   const { data: existing, error: selectError } = await supabase
-    .from("upvotes")
-    .select("build_id")
-    .eq("build_id", buildId)
-    .eq("user_id", userId)
+    .from('upvotes')
+    .select('build_id')
+    .eq('build_id', buildId)
+    .eq('user_id', userId)
     .maybeSingle();
 
   if (selectError) {
@@ -28,10 +28,10 @@ export async function toggleUpvote(buildId: string, userId: string) {
   if (existing) {
     // Remove the upvote
     const { error: deleteError } = await supabase
-      .from("upvotes")
+      .from('upvotes')
       .delete()
-      .eq("build_id", buildId)
-      .eq("user_id", userId);
+      .eq('build_id', buildId)
+      .eq('user_id', userId);
 
     if (deleteError) {
       return { data: null, error: deleteError };
@@ -42,19 +42,19 @@ export async function toggleUpvote(buildId: string, userId: string) {
 
   // Insert the upvote
   const { error: insertError } = await supabase
-    .from("upvotes")
+    .from('upvotes')
     .insert({ build_id: buildId, user_id: userId });
 
   if (insertError) {
     // Handle race condition: if a concurrent request already inserted the
     // upvote, we get a 23505 unique_violation. Treat this as "already
     // upvoted" and fall through to remove it instead.
-    if (insertError.code === "23505") {
+    if (insertError.code === '23505') {
       const { error: deleteError } = await supabase
-        .from("upvotes")
+        .from('upvotes')
         .delete()
-        .eq("build_id", buildId)
-        .eq("user_id", userId);
+        .eq('build_id', buildId)
+        .eq('user_id', userId);
 
       if (deleteError) {
         return { data: null, error: deleteError };
@@ -76,9 +76,9 @@ export async function getUpvoteCount(buildId: string) {
   const supabase = await createClient();
 
   const { count, error } = await supabase
-    .from("upvotes")
-    .select("*", { count: "exact", head: true })
-    .eq("build_id", buildId);
+    .from('upvotes')
+    .select('*', { count: 'exact', head: true })
+    .eq('build_id', buildId);
 
   return { data: count ?? 0, error };
 }
@@ -90,10 +90,10 @@ export async function hasUserUpvoted(buildId: string, userId: string) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("upvotes")
-    .select("build_id")
-    .eq("build_id", buildId)
-    .eq("user_id", userId)
+    .from('upvotes')
+    .select('build_id')
+    .eq('build_id', buildId)
+    .eq('user_id', userId)
     .maybeSingle();
 
   if (error) {

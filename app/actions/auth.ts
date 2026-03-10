@@ -1,9 +1,9 @@
-"use server";
+'use server';
 
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 
-import { Routes } from "@/lib/constants/routes";
-import { createClient } from "@/lib/supabase/server";
+import { Routes } from '@/lib/constants/routes';
+import { createClient } from '@/lib/supabase/server';
 
 /**
  * Signs the user out by clearing the Supabase session and redirecting
@@ -15,7 +15,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function signOut() {
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signOut({ scope: "local" });
+  const { error } = await supabase.auth.signOut({ scope: 'local' });
 
   if (error) {
     redirect(`${Routes.LOGIN}?error=${encodeURIComponent(error.message)}`);

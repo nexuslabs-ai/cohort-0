@@ -1,6 +1,6 @@
 # Bob the Builder — Roadmap
 
-*Can we ship it? Yes we can.*
+_Can we ship it? Yes we can._
 
 This document defines what gets built as the base, what bugs get planted, and what features are available for contributors to pick up. Everything is managed via GitHub Issues and GitHub Projects.
 
@@ -93,49 +93,49 @@ Features available for contributors to pick up. Each feature is filed as a GitHu
 
 Scoped to 1-2 files. Primarily frontend. Good for a first PR.
 
-| # | Feature | Type | PRD Version |
-|---|---|---|---|
-| F1 | **Add upvoting to Builds** — Upvote button on Build cards and detail page, one vote per user, toggle to remove vote, display vote count | Fullstack | v1 |
-| F2 | **Add dark mode toggle** — Light/dark switch in navigation, persist preference in local storage, respect system default | Frontend | v2 |
-| F3 | **Add copy link to Build** — Share button on Build detail that copies the Build URL to clipboard with toast confirmation | Frontend | v2 |
-| F4 | **Add tech stack tags** — Display tech stack tags on Build cards and detail page, allow selecting tags during Build submission | Fullstack | v1 |
-| F5 | **Add loading skeletons** — Skeleton placeholders while feed, Build detail, and profile pages are loading | Frontend | — |
-| F6 | **Make navigation responsive** — Collapse nav into hamburger menu on mobile, slide-out drawer | Frontend | v1 |
+| #   | Feature                                                                                                                                 | Type      | PRD Version |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------- |
+| F1  | **Add upvoting to Builds** — Upvote button on Build cards and detail page, one vote per user, toggle to remove vote, display vote count | Fullstack | v1          |
+| F2  | **Add dark mode toggle** — Light/dark switch in navigation, persist preference in local storage, respect system default                 | Frontend  | v2          |
+| F3  | **Add copy link to Build** — Share button on Build detail that copies the Build URL to clipboard with toast confirmation                | Frontend  | v2          |
+| F4  | **Add tech stack tags** — Display tech stack tags on Build cards and detail page, allow selecting tags during Build submission          | Fullstack | v1          |
+| F5  | **Add loading skeletons** — Skeleton placeholders while feed, Build detail, and profile pages are loading                               | Frontend  | —           |
+| F6  | **Make navigation responsive** — Collapse nav into hamburger menu on mobile, slide-out drawer                                           | Frontend  | v1          |
 
 ### Difficulty: Medium
 
 Spans 2-4 files. May involve both frontend and backend. Requires understanding data flow.
 
-| # | Feature | Type | PRD Version |
-|---|---|---|---|
-| F7 | **Build the comment system** — Add comment on a Build, edit/delete own comment, display in chronological order | Fullstack | v1 |
-| F8 | **Add featured Builds section** — Admin can feature/unfeature Builds, featured section at top of home feed | Fullstack | v1 |
-| F9 | **Add bookmark system** — Bookmark/unbookmark Builds, bookmarks tab on builder profile | Fullstack | v2 |
-| F10 | **Add search** — Search Builds by keyword across the platform (title, description, AI tools) | Fullstack | v2 |
-| F11 | **Filter Builds by AI tool** — AI tool filter bar on feed page, clickable tool badges, active state, combinable with other filters | Frontend | v1 |
-| F12 | **Sort Builds** — Sort by newest, most upvoted, most discussed on feed page | Fullstack | v1 |
-| F13 | **Make feed page responsive** — Build card grid adapts to mobile, screenshots stack properly | Frontend | v1 |
-| F14 | **Make Build detail page responsive** — Content, screenshots, and comments reflow on mobile | Frontend | v1 |
-| F15 | **Add builder stats to profile** — Total Builds submitted, total upvotes received, join date displayed on profile | Fullstack | v1 |
+| #   | Feature                                                                                                                            | Type      | PRD Version |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------- |
+| F7  | **Build the comment system** — Add comment on a Build, edit/delete own comment, display in chronological order                     | Fullstack | v1          |
+| F8  | **Add featured Builds section** — Admin can feature/unfeature Builds, featured section at top of home feed                         | Fullstack | v1          |
+| F9  | **Add bookmark system** — Bookmark/unbookmark Builds, bookmarks tab on builder profile                                             | Fullstack | v2          |
+| F10 | **Add search** — Search Builds by keyword across the platform (title, description, AI tools)                                       | Fullstack | v2          |
+| F11 | **Filter Builds by AI tool** — AI tool filter bar on feed page, clickable tool badges, active state, combinable with other filters | Frontend  | v1          |
+| F12 | **Sort Builds** — Sort by newest, most upvoted, most discussed on feed page                                                        | Fullstack | v1          |
+| F13 | **Make feed page responsive** — Build card grid adapts to mobile, screenshots stack properly                                       | Frontend  | v1          |
+| F14 | **Make Build detail page responsive** — Content, screenshots, and comments reflow on mobile                                        | Frontend  | v1          |
+| F15 | **Add builder stats to profile** — Total Builds submitted, total upvotes received, join date displayed on profile                  | Fullstack | v1          |
 
 ### Difficulty: Hard
 
 Spans multiple files and layers (frontend + backend + database). Requires understanding auth, database relationships, or complex state.
 
-| # | Feature | Type | PRD Version |
-|---|---|---|---|
-| F16 | **Build admin controls** — Admin can manage AI tools list, manage Build Types, manage tech stack tags, remove any Build or comment | Fullstack | v1 |
-| F17 | **Build threaded comments** — Reply to a comment (one level nesting), visual indentation, collapse/expand threads | Fullstack | v2 |
-| F18 | **Build notification system** — In-app notifications for comments on your Build, replies to your comments, and when your Build is featured; bell icon with unread count, mark as read | Fullstack | v2 |
-| F19 | **Add rich text editor** — Markdown support in Build descriptions and comments with preview, code block syntax highlighting | Frontend | v2 |
-| F20 | **Build the Build Story feature** — Optional long-form section on a Build for process breakdown, prompt snippets, AI conversation screenshots | Fullstack | v2 |
-| F21 | **Add Open Graph metadata** — Dynamic OG tags per Build (title, description, screenshot) for social sharing previews on Twitter and LinkedIn | Backend | v2 |
-| F22 | **Build the Weekly Spotlight** — Weekly cycle grouping, "This Week's Top Builds" section, weekly archive, weekly leaderboard | Fullstack | v3 |
-| F23 | **Build builder reputation system** — Score based on upvotes received, reputation badge on profile, tier labels (Newcomer → Legend) | Fullstack | v3 |
-| F24 | **Build collections** — Create named collections of Builds, add/remove Builds, public and shareable | Fullstack | v3 |
-| F25 | **Build follow system** — Follow builders and tags, personalized "Following" feed tab | Fullstack | v3 |
-| F26 | **Build builder streaks** — Track consecutive weeks of shipping, streak count and badge on profile | Fullstack | v3 |
-| F27 | **Build report and moderation queue** — Report Builds/comments, admin review queue, remove or dismiss, temporary bans | Fullstack | v3 |
+| #   | Feature                                                                                                                                                                               | Type      | PRD Version |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------- |
+| F16 | **Build admin controls** — Admin can manage AI tools list, manage Build Types, manage tech stack tags, remove any Build or comment                                                    | Fullstack | v1          |
+| F17 | **Build threaded comments** — Reply to a comment (one level nesting), visual indentation, collapse/expand threads                                                                     | Fullstack | v2          |
+| F18 | **Build notification system** — In-app notifications for comments on your Build, replies to your comments, and when your Build is featured; bell icon with unread count, mark as read | Fullstack | v2          |
+| F19 | **Add rich text editor** — Markdown support in Build descriptions and comments with preview, code block syntax highlighting                                                           | Frontend  | v2          |
+| F20 | **Build the Build Story feature** — Optional long-form section on a Build for process breakdown, prompt snippets, AI conversation screenshots                                         | Fullstack | v2          |
+| F21 | **Add Open Graph metadata** — Dynamic OG tags per Build (title, description, screenshot) for social sharing previews on Twitter and LinkedIn                                          | Backend   | v2          |
+| F22 | **Build the Weekly Spotlight** — Weekly cycle grouping, "This Week's Top Builds" section, weekly archive, weekly leaderboard                                                          | Fullstack | v3          |
+| F23 | **Build builder reputation system** — Score based on upvotes received, reputation badge on profile, tier labels (Newcomer → Legend)                                                   | Fullstack | v3          |
+| F24 | **Build collections** — Create named collections of Builds, add/remove Builds, public and shareable                                                                                   | Fullstack | v3          |
+| F25 | **Build follow system** — Follow builders and tags, personalized "Following" feed tab                                                                                                 | Fullstack | v3          |
+| F26 | **Build builder streaks** — Track consecutive weeks of shipping, streak count and badge on profile                                                                                    | Fullstack | v3          |
+| F27 | **Build report and moderation queue** — Report Builds/comments, admin review queue, remove or dismiss, temporary bans                                                                 | Fullstack | v3          |
 
 ---
 
@@ -143,31 +143,33 @@ Spans multiple files and layers (frontend + backend + database). Requires unders
 
 ### Labels
 
-| Label | Description |
-|---|---|
-| `bug` | Planted bug to fix |
-| `feature` | New feature to implement |
-| `easy` | 1-2 files, good first issue |
-| `medium` | 2-4 files, intermediate |
-| `hard` | Multi-layer, advanced |
-| `frontend` | UI/component work only |
-| `backend` | API/database work only |
-| `fullstack` | Both frontend and backend |
-| `v1` | Core PRD feature |
-| `v2` | Engage PRD feature |
-| `v3` | Grow PRD feature |
+| Label       | Description                 |
+| ----------- | --------------------------- |
+| `bug`       | Planted bug to fix          |
+| `feature`   | New feature to implement    |
+| `easy`      | 1-2 files, good first issue |
+| `medium`    | 2-4 files, intermediate     |
+| `hard`      | Multi-layer, advanced       |
+| `frontend`  | UI/component work only      |
+| `backend`   | API/database work only      |
+| `fullstack` | Both frontend and backend   |
+| `v1`        | Core PRD feature            |
+| `v2`        | Engage PRD feature          |
+| `v3`        | Grow PRD feature            |
 
 ### Issue Format
 
 Every issue (bug or feature) follows a consistent format:
 
 **Bug issues include:**
+
 - What the expected behavior is
 - What the actual (broken) behavior is
 - Which page/component is affected
 - Screenshot if applicable
 
 **Feature issues include:**
+
 - What the feature does (from PRD)
 - Acceptance criteria (checklist of what "done" looks like)
 - Which pages/components are involved

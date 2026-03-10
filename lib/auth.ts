@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 
-import { Routes } from "@/lib/constants/routes";
-import { createClient } from "@/lib/supabase/server";
+import { Routes } from '@/lib/constants/routes';
+import { createClient } from '@/lib/supabase/server';
 
 /**
  * Returns the currently authenticated user, or null if not logged in.

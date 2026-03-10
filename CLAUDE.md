@@ -73,15 +73,15 @@ All database queries live in `lib/queries/` and import `"server-only"`. They use
 
 ### Database Scripts
 
-| Script            | Target | What it does                                                        |
-| ----------------- | ------ | ------------------------------------------------------------------- |
-| `db:start`        | Local  | Start local Supabase (Docker containers)                            |
-| `db:stop`         | Local  | Stop local Supabase and remove containers                           |
-| `db:reset`        | Local  | Wipe and re-apply all migrations + seed data                        |
-| `db:push`         | Prod   | Apply pending migrations to linked remote project (team lead only)  |
-| `db:status`       | Local  | Show local Supabase status and connection info                      |
-| `gen-types:local` | Local  | Generate TypeScript types from local Supabase                       |
-| `gen-types:prod`  | Prod   | Generate TypeScript types from prod (`SUPABASE_PROJECT_ID` required)|
+| Script            | Target | What it does                                                         |
+| ----------------- | ------ | -------------------------------------------------------------------- |
+| `db:start`        | Local  | Start local Supabase (Docker containers)                             |
+| `db:stop`         | Local  | Stop local Supabase and remove containers                            |
+| `db:reset`        | Local  | Wipe and re-apply all migrations + seed data                         |
+| `db:push`         | Prod   | Apply pending migrations to linked remote project (team lead only)   |
+| `db:status`       | Local  | Show local Supabase status and connection info                       |
+| `gen-types:local` | Local  | Generate TypeScript types from local Supabase                        |
+| `gen-types:prod`  | Prod   | Generate TypeScript types from prod (`SUPABASE_PROJECT_ID` required) |
 
 Local workflow: `db:start` → `db:reset` → `gen-types:local` → `npm run dev` → `db:stop` when done.
 

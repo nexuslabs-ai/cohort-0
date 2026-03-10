@@ -1,7 +1,7 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from 'next/server';
 
-import { Routes } from "@/lib/constants/routes";
-import { createClient } from "@/lib/supabase/server";
+import { Routes } from '@/lib/constants/routes';
+import { createClient } from '@/lib/supabase/server';
 
 /**
  * OAuth callback handler.
@@ -20,27 +20,39 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const error = searchParams.get("error");
-  const errorDescription = searchParams.get("error_description");
-  const code = searchParams.get("code");
+  const error = searchParams.get('error');
+  const errorDescription = searchParams.get('error_description');
+  const code = searchParams.get('code');
 
   if (error) {
     const message = errorDescription ?? error;
-    return NextResponse.redirect(new URL(`${Routes.LOGIN}?error=${encodeURIComponent(message)}`, request.url));
+    return NextResponse.redirect(
+      new URL(
+        `${Routes.LOGIN}?error=${encodeURIComponent(message)}`,
+        request.url
+      )
+    );
   }
 
   if (!code) {
-    return NextResponse.redirect(new URL(`${Routes.LOGIN}?error=${encodeURIComponent("Missing authorization code")}`, request.url));
+    return NextResponse.redirect(
+      new URL(
+        `${Routes.LOGIN}?error=${encodeURIComponent('Missing authorization code')}`,
+        request.url
+      )
+    );
   }
 
   const supabase = await createClient();
-  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(
-    code,
-  );
+  const { error: exchangeError } =
+    await supabase.auth.exchangeCodeForSession(code);
 
   if (exchangeError) {
     return NextResponse.redirect(
-      new URL(`${Routes.LOGIN}?error=${encodeURIComponent(exchangeError.message)}`, request.url),
+      new URL(
+        `${Routes.LOGIN}?error=${encodeURIComponent(exchangeError.message)}`,
+        request.url
+      )
     );
   }
 

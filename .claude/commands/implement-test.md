@@ -4,8 +4,8 @@ Implement tests using the Tester agent, focusing on result validation over code 
 
 ## Agents Used
 
-| Agent                         | Skill                                               | When Used |
-| ----------------------------- | --------------------------------------------------- | --------- |
+| Agent                         | Skill                                                           | When Used |
+| ----------------------------- | --------------------------------------------------------------- | --------- |
 | [Tester](../agents/tester.md) | [implement-test-guide](../skills/implement-test-guide/SKILL.md) | Always    |
 
 ## Input (Optional)

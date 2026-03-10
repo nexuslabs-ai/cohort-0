@@ -8,6 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
@@ -23,7 +26,8 @@
     "docs:publish": "npm run docs:export && npm run docs:build && npm run docs:push",
     "docs:start": "docker run -d --name bob-the-builder-docs-mcp -p 6280:6280 ghcr.io/viveka-labs/bob-the-builder-docs-mcp:latest --protocol http --host 0.0.0.0 --port 6280 && echo 'Docs MCP server running at http://localhost:6280'",
     "docs:stop": "docker stop bob-the-builder-docs-mcp && docker rm bob-the-builder-docs-mcp",
-    "docs:pull": "docker pull ghcr.io/viveka-labs/bob-the-builder-docs-mcp:latest"
+    "docs:pull": "docker pull ghcr.io/viveka-labs/bob-the-builder-docs-mcp:latest",
+    "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -43,6 +47,15 @@
     "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6"
   },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml}": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^24.11.0",
@@ -50,6 +63,11 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^16.1.6",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.3",
+    "prettier": "^3.8.1",
     "shadcn": "^3.8.5",
     "supabase": "^2.76.17",
     "tailwindcss": "^4",

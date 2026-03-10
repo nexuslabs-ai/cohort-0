@@ -4,8 +4,8 @@ Fix issues identified in PR reviews using the SDE2 agent.
 
 ## Agent Used
 
-| Agent                     | Skill                               | Purpose           |
-| ------------------------- | ----------------------------------- | ----------------- |
+| Agent                     | Skill                                           | Purpose           |
+| ------------------------- | ----------------------------------------------- | ----------------- |
 | [SDE2](../agents/sde2.md) | [pr-fix-guide](../skills/pr-fix-guide/SKILL.md) | Fix review issues |
 
 ## Required Input
