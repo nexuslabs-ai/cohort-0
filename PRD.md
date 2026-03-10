@@ -1,6 +1,6 @@
 # Bob the Builder — Product Requirements Document
 
-**Tagline:** *Can we ship it? Yes we can.*
+**Tagline:** _Can we ship it? Yes we can._
 
 A community platform where builders share real work they've done with AI — the apps they launched, the features they shipped, the bugs they crushed, and the workflows they automated. Not tutorials. Not hype. Actual work, with proof.
 
@@ -16,7 +16,7 @@ Bob the Builder is the home for these people. A platform where anyone who shippe
 
 Every post answers one question: **"What did you ship, and how did AI help you ship it?"**
 
-*Can we ship it? Yes we can.*
+_Can we ship it? Yes we can._
 
 ---
 
@@ -43,6 +43,7 @@ What they have in common: they shipped something real with AI. Their title didn'
 The atomic unit of the platform. A Build is a showcase of work done with AI. It's not a blog post or a tutorial — it's a structured submission with proof of work.
 
 Every Build includes:
+
 - **What** was built (title + description)
 - **How** AI helped (which tools, what role AI played)
 - **Proof** (screenshots, live link, repo, or demo video)
@@ -51,13 +52,13 @@ Every Build includes:
 
 Builds are categorized by what kind of work was done:
 
-| Type | Description | Example |
-|------|-------------|---------|
-| **App** | A complete application or product | "Built a habit tracker app in 2 days with Claude" |
-| **Feature** | A feature shipped in a product | "Added AI-powered search to our dashboard using GPT-4" |
-| **Fix** | A bug squashed with AI assistance | "Fixed a race condition that stumped us for weeks — solved in one Claude session" |
-| **Automation** | A workflow, script, or pipeline | "Automated our entire deploy pipeline with AI-generated GitHub Actions" |
-| **Experiment** | A prototype, POC, or exploration | "Explored what a voice-first todo app could look like with Claude + ElevenLabs" |
+| Type           | Description                       | Example                                                                           |
+| -------------- | --------------------------------- | --------------------------------------------------------------------------------- |
+| **App**        | A complete application or product | "Built a habit tracker app in 2 days with Claude"                                 |
+| **Feature**    | A feature shipped in a product    | "Added AI-powered search to our dashboard using GPT-4"                            |
+| **Fix**        | A bug squashed with AI assistance | "Fixed a race condition that stumped us for weeks — solved in one Claude session" |
+| **Automation** | A workflow, script, or pipeline   | "Automated our entire deploy pipeline with AI-generated GitHub Actions"           |
+| **Experiment** | A prototype, POC, or exploration  | "Explored what a voice-first todo app could look like with Claude + ElevenLabs"   |
 
 ### AI Stack
 
@@ -77,11 +78,11 @@ Discussion on a Build. "How did you handle auth?" / "What prompts worked best?" 
 
 ## User Roles
 
-| Role | Can Do |
-|------|--------|
-| **Visitor** | Browse the feed, read Builds and comments. No account needed. |
-| **Builder** | Everything a visitor can do, plus: submit Builds, comment, upvote, manage profile. Requires sign-up. |
-| **Admin** | Everything a builder can do, plus: feature/remove Builds, manage AI tools list, manage build types, moderate content. |
+| Role        | Can Do                                                                                                                |
+| ----------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Visitor** | Browse the feed, read Builds and comments. No account needed.                                                         |
+| **Builder** | Everything a visitor can do, plus: submit Builds, comment, upvote, manage profile. Requires sign-up.                  |
+| **Admin**   | Everything a builder can do, plus: feature/remove Builds, manage AI tools list, manage build types, moderate content. |
 
 No moderator role in v1. The platform is small enough for admins to manage directly.
 
@@ -101,16 +102,16 @@ Everything needed for builders to share work and for visitors to discover it.
 
 A builder submits a Build with:
 
-| Field | Required | Details |
-|-------|----------|---------|
-| Title | Yes | What you built, in one line |
-| Description | Yes | What it does, the problem it solves, any context |
-| Build Type | Yes | App, Feature, Fix, Automation, or Experiment |
-| AI Tools Used | Yes | Multi-select from platform list + custom entry |
-| Screenshots | Yes (min 1) | Up to 5 images showing the work |
-| Live URL | No | Link to the deployed app/feature |
-| Repo URL | No | GitHub/GitLab link to source code |
-| Tech Stack Tags | No | Next.js, React, Python, Supabase, etc. |
+| Field           | Required    | Details                                          |
+| --------------- | ----------- | ------------------------------------------------ |
+| Title           | Yes         | What you built, in one line                      |
+| Description     | Yes         | What it does, the problem it solves, any context |
+| Build Type      | Yes         | App, Feature, Fix, Automation, or Experiment     |
+| AI Tools Used   | Yes         | Multi-select from platform list + custom entry   |
+| Screenshots     | Yes (min 1) | Up to 5 images showing the work                  |
+| Live URL        | No          | Link to the deployed app/feature                 |
+| Repo URL        | No          | GitHub/GitLab link to source code                |
+| Tech Stack Tags | No          | Next.js, React, Python, Supabase, etc.           |
 
 - Edit own Build after submission
 - Delete own Build
@@ -145,17 +146,18 @@ The home page is a feed of Builds.
 
 Every builder has a public profile page.
 
-| Field | Editable | Details |
-|-------|----------|---------|
-| Display Name | Yes | Public-facing name |
-| Avatar | Yes | Profile picture |
-| Bio | Yes | One-liner about yourself |
-| GitHub | Yes | Link to GitHub profile |
-| Twitter/X | Yes | Link to Twitter profile |
-| LinkedIn | Yes | Link to LinkedIn profile |
-| Website | Yes | Personal site URL |
+| Field        | Editable | Details                  |
+| ------------ | -------- | ------------------------ |
+| Display Name | Yes      | Public-facing name       |
+| Avatar       | Yes      | Profile picture          |
+| Bio          | Yes      | One-liner about yourself |
+| GitHub       | Yes      | Link to GitHub profile   |
+| Twitter/X    | Yes      | Link to Twitter profile  |
+| LinkedIn     | Yes      | Link to LinkedIn profile |
+| Website      | Yes      | Personal site URL        |
 
 Profile also shows:
+
 - All Builds submitted by this builder (newest first)
 - Total upvotes received across all Builds
 - Join date
@@ -257,21 +259,21 @@ Features that turn the platform into a thriving builder community.
 
 Reputation is earned through community validation:
 
-| Action | Points |
-|--------|--------|
-| Build receives an upvote | +2 |
-| Comment receives an upvote | +1 |
-| Build gets featured | +10 |
+| Action                     | Points |
+| -------------------------- | ------ |
+| Build receives an upvote   | +2     |
+| Comment receives an upvote | +1     |
+| Build gets featured        | +10    |
 
 Tiers based on total points:
 
-| Tier | Badge | Threshold |
-|------|-------|-----------|
-| Newcomer | — | 0 |
-| Builder | Bronze | 25 |
-| Prolific | Silver | 100 |
-| Veteran | Gold | 500 |
-| Legend | Diamond | 2000 |
+| Tier     | Badge   | Threshold |
+| -------- | ------- | --------- |
+| Newcomer | —       | 0         |
+| Builder  | Bronze  | 25        |
+| Prolific | Silver  | 100       |
+| Veteran  | Gold    | 500       |
+| Legend   | Diamond | 2000      |
 
 Badge displayed next to username everywhere.
 

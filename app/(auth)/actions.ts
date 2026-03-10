@@ -1,10 +1,10 @@
-"use server";
+'use server';
 
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 
-import { Routes } from "@/lib/constants/routes";
-import { clientEnv } from "@/lib/env.client";
-import { createClient } from "@/lib/supabase/server";
+import { Routes } from '@/lib/constants/routes';
+import { clientEnv } from '@/lib/env.client';
+import { createClient } from '@/lib/supabase/server';
 
 /**
  * Initiates an OAuth sign-in flow with the given provider using
@@ -15,7 +15,7 @@ import { createClient } from "@/lib/supabase/server";
  * consent screen. On success, the provider sends the user back
  * to /auth/callback with an authorization code.
  */
-async function signInWithProvider(provider: "google" | "github") {
+async function signInWithProvider(provider: 'google' | 'github') {
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
@@ -33,9 +33,9 @@ async function signInWithProvider(provider: "google" | "github") {
 }
 
 export async function signInWithGoogle() {
-  return signInWithProvider("google");
+  return signInWithProvider('google');
 }
 
 export async function signInWithGithub() {
-  return signInWithProvider("github");
+  return signInWithProvider('github');
 }

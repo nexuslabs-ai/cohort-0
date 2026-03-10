@@ -2,11 +2,11 @@
 
 ## Repository Info
 
-| Field       | Value             |
-| ----------- | ----------------- |
+| Field       | Value                                        |
+| ----------- | -------------------------------------------- |
 | Owner       | Inferred from `git remote` — do not hardcode |
 | Repo        | Inferred from `git remote` — do not hardcode |
-| Main Branch | `main`            |
+| Main Branch | `main`                                       |
 
 **Resolve `{owner}` and `{repo}` at runtime:**
 

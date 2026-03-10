@@ -4,8 +4,8 @@ Analyze dependencies for updates, breaking changes, deprecations, and migration 
 
 ## Agent Used
 
-| Agent                         | Skill                                           | Purpose                    |
-| ----------------------------- | ----------------------------------------------- | -------------------------- |
+| Agent                         | Skill                                                       | Purpose                    |
+| ----------------------------- | ----------------------------------------------------------- | -------------------------- |
 | [DevOps](../agents/devops.md) | [analyze-deps-guide](../skills/analyze-deps-guide/SKILL.md) | Dependency analysis report |
 
 ## Input

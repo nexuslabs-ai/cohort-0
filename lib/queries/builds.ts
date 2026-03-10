@@ -1,7 +1,7 @@
-import "server-only";
+import 'server-only';
 
-import { createClient } from "@/lib/supabase/server";
-import type { BuildInsert, BuildUpdate, BuildWithDetails } from "@/types";
+import { createClient } from '@/lib/supabase/server';
+import type { BuildInsert, BuildUpdate, BuildWithDetails } from '@/types';
 
 /**
  * Shared select string for fetching builds with all related data.
@@ -32,18 +32,21 @@ export async function getBuilds() {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("builds")
+    .from('builds')
     .select(BUILD_WITH_DETAILS_SELECT)
-    .order("created_at", { ascending: false });
+    .order('created_at', { ascending: false });
 
   if (error) {
     return { data: null, error };
   }
 
-  const builds: BuildWithDetails[] = (data ?? []).map((build) => ({
-    ...build,
-    upvote_count: build.upvotes[0]?.count ?? 0,
-  }) as BuildWithDetails);
+  const builds: BuildWithDetails[] = (data ?? []).map(
+    (build) =>
+      ({
+        ...build,
+        upvote_count: build.upvotes[0]?.count ?? 0,
+      }) as BuildWithDetails
+  );
 
   return { data: builds, error: null };
 }
@@ -56,9 +59,9 @@ export async function getBuildById(id: string) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("builds")
+    .from('builds')
     .select(BUILD_WITH_DETAILS_SELECT)
-    .eq("id", id)
+    .eq('id', id)
     .single();
 
   if (error) {
@@ -81,13 +84,13 @@ export async function getBuildById(id: string) {
  * explicitly. RLS enforces ownership.
  */
 export async function createBuild(
-  data: Omit<BuildInsert, "user_id">,
-  userId: string,
+  data: Omit<BuildInsert, 'user_id'>,
+  userId: string
 ) {
   const supabase = await createClient();
 
   return supabase
-    .from("builds")
+    .from('builds')
     .insert({ ...data, user_id: userId })
     .select()
     .single();
@@ -102,7 +105,7 @@ export async function createBuild(
 export async function updateBuild(id: string, data: BuildUpdate) {
   const supabase = await createClient();
 
-  return supabase.from("builds").update(data).eq("id", id).select().single();
+  return supabase.from('builds').update(data).eq('id', id).select().single();
 }
 
 /**
@@ -112,5 +115,5 @@ export async function updateBuild(id: string, data: BuildUpdate) {
 export async function deleteBuild(id: string) {
   const supabase = await createClient();
 
-  return supabase.from("builds").delete().eq("id", id).select().single();
+  return supabase.from('builds').delete().eq('id', id).select().single();
 }

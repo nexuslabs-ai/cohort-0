@@ -4,10 +4,10 @@ Implements features using Principal Architect for planning and SDE2 for executio
 
 ## Agents Used
 
-| Agent | When |
-| --- | --- |
-| [Principal Architect](../agents/principal-architect.md) | Always — creates the implementation plan. With `--review`, also reviews after each task. |
-| [SDE2](../agents/sde2.md) | Always — implements each task. With `--review`, also runs fixes when architect flags issues. |
+| Agent                                                   | When                                                                                         |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| [Principal Architect](../agents/principal-architect.md) | Always — creates the implementation plan. With `--review`, also reviews after each task.     |
+| [SDE2](../agents/sde2.md)                               | Always — implements each task. With `--review`, also runs fixes when architect flags issues. |
 
 ## Input
 
@@ -76,6 +76,7 @@ Otherwise       → Use conversation context
 Also parse for `--review` or `-r` flag. Store as `review_mode = true/false`.
 
 Collect:
+
 - Full requirements text
 - Acceptance criteria (explicit or inferred)
 - Any design references or constraints
@@ -90,11 +91,11 @@ Collect:
 
 2. Derive branch name:
 
-   | Context | Branch name pattern |
-   | --- | --- |
+   | Context      | Branch name pattern                           |
+   | ------------ | --------------------------------------------- |
    | GitHub issue | `{username}/issue-{number}-{slugified-title}` |
-   | Spec file | `{username}/{slugified-filename}` |
-   | Conversation | Ask user |
+   | Spec file    | `{username}/{slugified-filename}`             |
+   | Conversation | Ask user                                      |
 
 3. Check if branch exists:
 
@@ -334,6 +335,7 @@ Architect flagged issues in **Task {n}: {task name}** after 2 fix attempts.
 {latest SDE2 summary}
 
 How should we proceed?
+
 1. Try a different approach (describe it)
 2. Accept as-is and move to the next task
 3. Skip this task entirely
@@ -354,24 +356,29 @@ After all tasks are done:
 ## Implementation Complete
 
 ### Task Reference
+
 {GitHub Issue #123 — title | Spec: filename.md | Request: summary}
 
 ### Completed Tasks
-| # | Task | Status |
-|---|------|--------|
-| 1 | {task name} | Done |
-| 2 | {task name} | Done |
+
+| #   | Task        | Status |
+| --- | ----------- | ------ |
+| 1   | {task name} | Done   |
+| 2   | {task name} | Done   |
 
 ### Files Modified
-| File | Change |
-|------|--------|
+
+| File               | Change        |
+| ------------------ | ------------- |
 | `path/to/file.tsx` | {description} |
 
 ### Verification
+
 - TypeScript: No errors
 - Lint: No warnings
 
 ### Next Steps
+
 - Review changes: `git diff main`
 - Create PR: `gh pr create` or `/pr-review`
 ```
@@ -380,11 +387,11 @@ After all tasks are done:
 
 ## When to Ask User
 
-| Situation | Action |
-| --- | --- |
-| After architect creates plan | Always show plan and WAIT for approval |
-| Branch already exists | Ask: checkout existing or create new? |
-| Branch name unknown (conversation) | Ask user for branch name |
-| SDE2 blocked on ambiguous requirements | Ask for clarification before continuing |
-| Architect raises a design decision (not a bug) | Ask user — SDE2 cannot resolve this |
-| Fix loop hits 2 failed attempts | Ask user for guidance |
+| Situation                                      | Action                                  |
+| ---------------------------------------------- | --------------------------------------- |
+| After architect creates plan                   | Always show plan and WAIT for approval  |
+| Branch already exists                          | Ask: checkout existing or create new?   |
+| Branch name unknown (conversation)             | Ask user for branch name                |
+| SDE2 blocked on ambiguous requirements         | Ask for clarification before continuing |
+| Architect raises a design decision (not a bug) | Ask user — SDE2 cannot resolve this     |
+| Fix loop hits 2 failed attempts                | Ask user for guidance                   |

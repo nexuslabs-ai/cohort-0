@@ -11,10 +11,10 @@
  * The function must be named "proxy" (not "middleware").
  */
 
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from 'next/server';
 
-import { Routes } from "@/lib/constants/routes";
-import { updateSession } from "@/lib/supabase/proxy";
+import { Routes } from '@/lib/constants/routes';
+import { updateSession } from '@/lib/supabase/proxy';
 
 /**
  * Paths that unauthenticated users can access.
@@ -26,7 +26,12 @@ import { updateSession } from "@/lib/supabase/proxy";
  * API routes are included here because they handle their own auth
  * (returning 401 JSON responses instead of HTML redirects).
  */
-const PUBLIC_PATHS = [Routes.LOGIN, Routes.SIGNUP, Routes.AUTH_CALLBACK, "/api"] as const;
+const PUBLIC_PATHS = [
+  Routes.LOGIN,
+  Routes.SIGNUP,
+  Routes.AUTH_CALLBACK,
+  '/api',
+] as const;
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((path) => pathname.startsWith(path));
@@ -62,6 +67,6 @@ export async function proxy(request: NextRequest) {
  */
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

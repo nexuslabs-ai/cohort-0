@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { LogOut } from "lucide-react";
+import { LogOut } from 'lucide-react';
 
-import { signOut } from "@/app/actions/auth";
-import { Button } from "@/components/ui/button";
+import { signOut } from '@/app/actions/auth';
+import { Button } from '@/components/ui/button';
 
 export function SignOutButton() {
   return (

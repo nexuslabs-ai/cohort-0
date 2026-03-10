@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // ---------------------------------------------------------------------------
 // Why literal process.env references?
@@ -21,15 +21,12 @@ import { z } from "zod";
 const clientEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z
     .string()
-    .min(
-      1,
-      "Missing NEXT_PUBLIC_SUPABASE_URL — copy .env.example to .env",
-    ),
+    .min(1, 'Missing NEXT_PUBLIC_SUPABASE_URL — copy .env.example to .env'),
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z
     .string()
     .min(
       1,
-      "Missing NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY — copy .env.example to .env",
+      'Missing NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY — copy .env.example to .env'
     ),
   // ---------------------------------------------------------------------------
   // Site URL fallback chain (for OAuth redirect URLs):
@@ -43,13 +40,13 @@ const clientEnvSchema = z.object({
   // ---------------------------------------------------------------------------
   NEXT_PUBLIC_SITE_URL: z
     .string()
-    .url("NEXT_PUBLIC_SITE_URL must be a valid URL")
-    .transform((val) => val.replace(/\/+$/, ""))
+    .url('NEXT_PUBLIC_SITE_URL must be a valid URL')
+    .transform((val) => val.replace(/\/+$/, ''))
     .optional(),
   NEXT_PUBLIC_VERCEL_URL: z
     .string()
     .min(1)
-    .transform((val) => val.replace(/\/+$/, ""))
+    .transform((val) => val.replace(/\/+$/, ''))
     .optional(),
 });
 
@@ -76,7 +73,7 @@ function resolveSiteUrl(): string {
     return `https://${parsedEnv.NEXT_PUBLIC_VERCEL_URL}`;
   }
 
-  return "http://localhost:3000";
+  return 'http://localhost:3000';
 }
 
 export const clientEnv = {

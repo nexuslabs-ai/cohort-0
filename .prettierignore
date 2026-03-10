@@ -5,3 +5,4 @@ out
 coverage
 package-lock.json
 .DS_Store
+lib/supabase/database.types.ts
