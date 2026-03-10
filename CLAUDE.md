@@ -21,11 +21,11 @@ Product designers with near-zero frontend knowledge. Explain everything through 
 
 Three-environment model: **Local**, **Dev**, and **Prod**.
 
-| Environment | Supabase Project Ref      | Branch | Vercel URL                               |
-| ----------- | ------------------------- | ------ | ---------------------------------------- |
-| Local       | Docker (`supabase start`) | --     | `http://localhost:3000`                  |
-| Dev         | `fpbglwvzpmqmtdtrhuhc`    | `dev`  | `https://dev.bob-the-builder.vercel.app` |
-| Prod        | `nktwfzcadffzfthslckx`    | `main` | `https://bob-the-builder.vercel.app`     |
+| Environment | Supabase Project Ref      | Branch | Vercel URL                                                             |
+| ----------- | ------------------------- | ------ | ---------------------------------------------------------------------- |
+| Local       | Docker (`supabase start`) | --     | `http://localhost:3000`                                                |
+| Dev         | `fpbglwvzpmqmtdtrhuhc`    | `dev`  | `https://bob-the-builder-git-dev-innovativegamers-projects.vercel.app` |
+| Prod        | `nktwfzcadffzfthslckx`    | `main` | `https://bob-the-builder-zeta.vercel.app`                              |
 
 ### Branch Workflow
 
