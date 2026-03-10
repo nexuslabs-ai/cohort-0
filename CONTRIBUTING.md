@@ -20,7 +20,7 @@ No Docker needed. You'll connect to the shared production Supabase project.
 npm install
 
 # 2. Set up environment variables
-cp .env.local.example .env.local
+cp .env.example .env
 # Ask the team lead on Discord for the Supabase credentials and paste them in
 
 # 3. Start the development server
@@ -45,7 +45,7 @@ npm run db:start
 # When done, it prints a URL and publishable key — you'll need these next
 
 # 3. Set up environment variables
-cp .env.local.example .env.local
+cp .env.example .env
 # Paste the URL and publishable key from the supabase start output:
 #   NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 #   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<publishable key>

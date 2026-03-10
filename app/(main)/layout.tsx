@@ -9,7 +9,7 @@ export default function MainLayout({
     <div className="min-h-screen">
       <header className="border-b">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <span className="text-lg font-semibold">Nexus</span>
+          <span className="text-lg font-semibold">Bob the Builder</span>
           <SignOutButton />
         </div>
       </header>

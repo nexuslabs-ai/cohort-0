@@ -63,7 +63,7 @@ All database queries live in `lib/queries/` and import `"server-only"`. They use
 ### Environment Variables
 
 - Validated at startup via Zod (`lib/env.client.ts` and `lib/env.server.ts`)
-- Copy `.env.local.example` to `.env.local` for local development
+- Copy `.env.example` to `.env` for local development
 - `NEXT_PUBLIC_*` vars are inlined by Next.js at build time -- must be literal `process.env.NEXT_PUBLIC_*` references
 
 ### Generated Types

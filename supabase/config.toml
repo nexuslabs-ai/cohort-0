@@ -316,6 +316,29 @@ skip_nonce_check = false
 # If enabled, it will allow the user to successfully authenticate when the provider does not return an email address.
 email_optional = false
 
+# GitHub OAuth — for local development.
+# Callback URL to register in your GitHub OAuth App:
+#   http://127.0.0.1:54321/auth/v1/callback
+# client_id is not a secret and is safe to commit.
+# Ask the team lead for SUPABASE_AUTH_EXTERNAL_GITHUB_SECRET (or check the shared team vault).
+[auth.external.github]
+enabled = true
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GITHUB_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GITHUB_SECRET)"
+redirect_uri = ""
+
+# Google OAuth — for local development.
+# Callback URL to register in your Google OAuth App:
+#   http://127.0.0.1:54321/auth/v1/callback
+# client_id is not a secret and is safe to commit.
+# Ask the team lead for SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET (or check the shared team vault).
+[auth.external.google]
+enabled = true
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
+redirect_uri = ""
+skip_nonce_check = false
+
 # Allow Solana wallet holders to sign in to your project via the Sign in with Solana (SIWS, EIP-4361) standard.
 # You can configure "web3" rate limit in the [auth.rate_limit] section and set up [auth.captcha] if self-hosting.
 [auth.web3.solana]

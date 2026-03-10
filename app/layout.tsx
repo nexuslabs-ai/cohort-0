@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Examlly",
+  title: "Bob the Builder",
   description: "A builder community platform",
 };
 

@@ -1,5 +1,4 @@
-import { type NextRequest } from "next/server";
-import { redirect } from "next/navigation";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { Routes } from "@/lib/constants/routes";
 import { createClient } from "@/lib/supabase/server";
@@ -27,11 +26,11 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     const message = errorDescription ?? error;
-    redirect(`${Routes.LOGIN}?error=${encodeURIComponent(message)}`);
+    return NextResponse.redirect(new URL(`${Routes.LOGIN}?error=${encodeURIComponent(message)}`, request.url));
   }
 
   if (!code) {
-    redirect(`${Routes.LOGIN}?error=${encodeURIComponent("Missing authorization code")}`);
+    return NextResponse.redirect(new URL(`${Routes.LOGIN}?error=${encodeURIComponent("Missing authorization code")}`, request.url));
   }
 
   const supabase = await createClient();
@@ -40,10 +39,10 @@ export async function GET(request: NextRequest) {
   );
 
   if (exchangeError) {
-    redirect(
-      `${Routes.LOGIN}?error=${encodeURIComponent(exchangeError.message)}`,
+    return NextResponse.redirect(
+      new URL(`${Routes.LOGIN}?error=${encodeURIComponent(exchangeError.message)}`, request.url),
     );
   }
 
-  redirect(Routes.HOME);
+  return NextResponse.redirect(new URL(Routes.HOME, request.url));
 }

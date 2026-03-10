@@ -23,18 +23,18 @@ const clientEnvSchema = z.object({
     .string()
     .min(
       1,
-      "Missing NEXT_PUBLIC_SUPABASE_URL — copy .env.local.example to .env.local",
+      "Missing NEXT_PUBLIC_SUPABASE_URL — copy .env.example to .env",
     ),
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z
     .string()
     .min(
       1,
-      "Missing NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY — copy .env.local.example to .env.local",
+      "Missing NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY — copy .env.example to .env",
     ),
   // ---------------------------------------------------------------------------
   // Site URL fallback chain (for OAuth redirect URLs):
   //
-  //   1. NEXT_PUBLIC_SITE_URL   — explicitly set in .env.local or Vercel project settings
+  //   1. NEXT_PUBLIC_SITE_URL   — explicitly set in .env or Vercel project settings
   //   2. NEXT_PUBLIC_VERCEL_URL — auto-set by Vercel on every deployment (no protocol)
   //   3. http://localhost:3000  — local development fallback
   //

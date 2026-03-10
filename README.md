@@ -26,8 +26,8 @@ Connect to the shared production Supabase project.
 
 ```bash
 npm install
-cp .env.local.example .env.local
-# Ask the team lead for Supabase credentials and paste them in .env.local
+cp .env.example .env
+# Ask the team lead for Supabase credentials and paste them in .env
 npm run dev
 ```
 
@@ -40,8 +40,8 @@ Use this when working on database schema, migrations, or RLS policies.
 ```bash
 npm install
 npm run db:start          # First run downloads images (~5 min)
-cp .env.local.example .env.local
-# Paste the URL and publishable key from `npm run db:start` output into .env.local
+cp .env.example .env
+# Paste the URL and publishable key from `npm run db:start` output into .env
 npm run db:reset             # Apply migrations + seed data locally
 npm run gen-types:local      # Generate TypeScript types
 npm run dev
