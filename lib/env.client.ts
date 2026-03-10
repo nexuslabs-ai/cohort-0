@@ -46,7 +46,11 @@ const clientEnvSchema = z.object({
     .url("NEXT_PUBLIC_SITE_URL must be a valid URL")
     .transform((val) => val.replace(/\/+$/, ""))
     .optional(),
-  NEXT_PUBLIC_VERCEL_URL: z.string().min(1).optional(),
+  NEXT_PUBLIC_VERCEL_URL: z
+    .string()
+    .min(1)
+    .transform((val) => val.replace(/\/+$/, ""))
+    .optional(),
 });
 
 const parsedEnv = clientEnvSchema.parse({
