@@ -19,10 +19,11 @@ const eslintConfig = defineConfig([
         'error',
         {
           groups: [
-            ['^@?\\w'],    // External packages
-            ['^@/'],       // Internal path alias
-            ['^\\.\\.\\.'], // Parent imports
-            ['^\\.'],      // Sibling imports
+            ['^\\u0000'],    // Side-effect imports (e.g. import 'server-only')
+            ['^@?\\w'],      // External packages
+            ['^@/'],         // Internal path alias
+            ['^\\.\\.\\/'],  // Parent imports (../)
+            ['^\\.'],        // Sibling imports (./)
           ],
         },
       ],
