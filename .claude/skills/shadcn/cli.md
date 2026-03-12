@@ -227,16 +227,19 @@ npx shadcn@latest migrate [migration] [path] [options]
 
 Runs available migrations on your project. Without arguments, runs all applicable migrations. Specify a migration name and/or path to target specific migrations or files.
 
-| Flag     | Short | Description               | Default |
-| -------- | ----- | ------------------------- | ------- |
-| `--list` | `-l`  | List available migrations | —       |
+| Flag          | Short | Description               | Default |
+| ------------- | ----- | ------------------------- | ------- |
+| `--list`      | `-l`  | List available migrations | —       |
+| `--cwd <cwd>` | `-c`  | Working directory         | current |
+| `--yes`       | `-y`  | Skip confirmation prompt  | `false` |
 
 **Available migrations:**
 
-| Migration | Description            |
-| --------- | ---------------------- |
-| `rtl`     | Migrate to RTL support |
-| `radix`   | Migrate to Radix base  |
+| Migration | Description                         |
+| --------- | ----------------------------------- |
+| `icons`   | Migrate to a different icon library |
+| `radix`   | Migrate to Radix base               |
+| `rtl`     | Migrate to RTL support              |
 
 ```bash
 # List all available migrations.
