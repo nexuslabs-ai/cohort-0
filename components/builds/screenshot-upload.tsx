@@ -56,13 +56,21 @@ export function ScreenshotUpload({
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Keep a stable ref to onUrlsChange so the sync effect below only fires
+  // when `screenshots` actually changes — not on every parent re-render
+  // (react-hook-form's field.onChange is not referentially stable).
+  const onUrlsChangeRef = useRef(onUrlsChange);
+  useEffect(() => {
+    onUrlsChangeRef.current = onUrlsChange;
+  }, [onUrlsChange]);
+
   const remainingSlots = maxFiles - screenshots.length - uploading.length;
 
   // Sync parent whenever screenshots change — avoids stale-closure issues
   // in async callbacks that would otherwise read an outdated `screenshots`.
   useEffect(() => {
-    onUrlsChange(screenshots.map((s) => s.url));
-  }, [screenshots, onUrlsChange]);
+    onUrlsChangeRef.current(screenshots.map((s) => s.url));
+  }, [screenshots]);
 
   // -------------------------------------------------------------------------
   // Upload a single file: get signed URL -> upload to storage -> get public URL
