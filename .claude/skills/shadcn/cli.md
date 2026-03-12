@@ -8,7 +8,7 @@ Configuration is read from `components.json`.
 
 ## Contents
 
-- Commands: init, add (dry-run, smart merge), search, view, docs, info, build
+- Commands: init, add (dry-run, smart merge), search, view, docs, info, build, migrate
 - Templates: next, vite, start, react-router, astro
 - Presets: named, code, URL formats and fields
 - Switching presets
@@ -25,20 +25,20 @@ npx shadcn@latest init [components...] [options]
 
 Initializes shadcn/ui in an existing project or creates a new project (when `--name` is provided). Optionally installs components in the same step.
 
-| Flag                    | Short | Description                                               | Default |
-| ----------------------- | ----- | --------------------------------------------------------- | ------- |
-| `--template <template>` | `-t`  | Template (next, start, vite, next-monorepo, react-router) | —       |
-| `--preset [name]`       | `-p`  | Preset configuration (named, code, or URL)                | —       |
-| `--yes`                 | `-y`  | Skip confirmation prompt                                  | `true`  |
-| `--defaults`            | `-d`  | Use defaults (`--template=next --preset=base-nova`)       | `false` |
-| `--force`               | `-f`  | Force overwrite existing configuration                    | `false` |
-| `--cwd <cwd>`           | `-c`  | Working directory                                         | current |
-| `--name <name>`         | `-n`  | Name for new project                                      | —       |
-| `--silent`              | `-s`  | Mute output                                               | `false` |
-| `--rtl`                 |       | Enable RTL support                                        | —       |
-| `--reinstall`           |       | Re-install existing UI components                         | `false` |
-| `--monorepo`            |       | Scaffold a monorepo project                               | —       |
-| `--no-monorepo`         |       | Skip the monorepo prompt                                  | —       |
+| Flag                    | Short | Description                                                | Default |
+| ----------------------- | ----- | ---------------------------------------------------------- | ------- |
+| `--template <template>` | `-t`  | Template (next, vite, start, react-router, astro, laravel) | —       |
+| `--preset [name]`       | `-p`  | Preset configuration (named, code, or URL)                 | —       |
+| `--yes`                 | `-y`  | Skip confirmation prompt                                   | `true`  |
+| `--defaults`            | `-d`  | Use defaults (`--template=next --preset=base-nova`)        | `false` |
+| `--force`               | `-f`  | Force overwrite existing configuration                     | `false` |
+| `--cwd <cwd>`           | `-c`  | Working directory                                          | current |
+| `--name <name>`         | `-n`  | Name for new project                                       | —       |
+| `--silent`              | `-s`  | Mute output                                                | `false` |
+| `--rtl`                 |       | Enable RTL support                                         | —       |
+| `--reinstall`           |       | Re-install existing UI components                          | `false` |
+| `--monorepo`            |       | Scaffold a monorepo project                                | —       |
+| `--no-monorepo`         |       | Skip the monorepo prompt                                   | —       |
 
 `npx shadcn@latest create` is an alias for `npx shadcn@latest init`.
 
@@ -218,6 +218,39 @@ Builds `registry.json` into individual JSON files for distribution. Default inpu
 | ----------------- | ----- | ----------------- | ------------ |
 | `--output <path>` | `-o`  | Output directory  | `./public/r` |
 | `--cwd <cwd>`     | `-c`  | Working directory | current      |
+
+### `migrate` — Run migrations
+
+```bash
+npx shadcn@latest migrate [migration] [path] [options]
+```
+
+Runs available migrations on your project. Without arguments, runs all applicable migrations. Specify a migration name and/or path to target specific migrations or files.
+
+| Flag     | Short | Description               | Default |
+| -------- | ----- | ------------------------- | ------- |
+| `--list` | `-l`  | List available migrations | —       |
+
+**Available migrations:**
+
+| Migration | Description            |
+| --------- | ---------------------- |
+| `rtl`     | Migrate to RTL support |
+| `radix`   | Migrate to Radix base  |
+
+```bash
+# List all available migrations.
+npx shadcn@latest migrate --list
+
+# Run all applicable migrations.
+npx shadcn@latest migrate
+
+# Run a specific migration.
+npx shadcn@latest migrate rtl
+
+# Run a migration on a specific path.
+npx shadcn@latest migrate radix ./components/ui
+```
 
 ---
 

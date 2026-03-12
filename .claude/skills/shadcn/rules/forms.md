@@ -131,7 +131,7 @@ const [selected, setSelected] = useState("daily")
 ```tsx
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
-<ToggleGroup spacing={2}>
+<ToggleGroup type="single" spacing={2}>
   <ToggleGroupItem value="daily">Daily</ToggleGroupItem>
   <ToggleGroupItem value="weekly">Weekly</ToggleGroupItem>
   <ToggleGroupItem value="monthly">Monthly</ToggleGroupItem>
@@ -143,7 +143,7 @@ Combine with `Field` for labelled toggle groups:
 ```tsx
 <Field orientation="horizontal">
   <FieldTitle id="theme-label">Theme</FieldTitle>
-  <ToggleGroup aria-labelledby="theme-label" spacing={2}>
+  <ToggleGroup type="single" aria-labelledby="theme-label" spacing={2}>
     <ToggleGroupItem value="light">Light</ToggleGroupItem>
     <ToggleGroupItem value="dark">Dark</ToggleGroupItem>
     <ToggleGroupItem value="system">System</ToggleGroupItem>
