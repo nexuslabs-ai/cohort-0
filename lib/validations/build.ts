@@ -34,7 +34,7 @@ export const buildFormSchema = z.object({
     z.string().uuid({ error: 'Each tag must be a valid ID' })
   ),
   screenshot_urls: z
-    .array(z.string().min(1, { error: 'Screenshot URL must not be empty' }))
+    .array(z.string().url({ error: 'Each screenshot must be a valid URL' }))
     .min(1, { error: 'At least 1 screenshot is required' })
     .max(5, { error: 'Maximum 5 screenshots allowed' }),
 });
