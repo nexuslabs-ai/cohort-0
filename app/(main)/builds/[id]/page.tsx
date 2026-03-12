@@ -2,6 +2,7 @@ import { ExternalLinkIcon } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { BuildOwnerActions } from '@/components/builds/build-owner-actions';
 import { ScreenshotGallery } from '@/components/builds/screenshot-gallery';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -56,8 +57,7 @@ export default async function BuildDetailPage({
           </div>
         </div>
 
-        {/* TODO: BuildOwnerActions — Task 4 */}
-        {isOwner && <div />}
+        {isOwner && <BuildOwnerActions buildId={build.id} />}
       </div>
 
       {/* Builder info */}
