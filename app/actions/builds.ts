@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 
 import { requireUser } from '@/lib/auth';
 import { buildRoute } from '@/lib/constants/routes';
+import { BUCKET_NAME } from '@/lib/constants/storage';
+import { clientEnv } from '@/lib/env.client';
 import { createBuildWithRelations } from '@/lib/queries/builds';
 import { type BuildFormData, buildFormSchema } from '@/lib/validations/build';
 
@@ -22,7 +24,7 @@ import { type BuildFormData, buildFormSchema } from '@/lib/validations/build';
  * On success, redirects -- so the caller never receives a return value.
  */
 export async function createBuildAction(data: BuildFormData) {
-  await requireUser();
+  const user = await requireUser();
 
   const result = buildFormSchema.safeParse(data);
 
@@ -32,6 +34,19 @@ export async function createBuildAction(data: BuildFormData) {
 
   const { ai_tool_ids, tech_stack_tag_ids, screenshot_urls, ...buildData } =
     result.data;
+
+  // Validate that all screenshot URLs originate from our Supabase Storage
+  // bucket under the authenticated user's folder. This prevents injection
+  // of arbitrary external URLs (tracking pixels, XSS via SVG, etc.).
+  const allowedPrefix = `${clientEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${user.id}/`;
+
+  const hasInvalidUrl = screenshot_urls.some(
+    (url) => !url.startsWith(allowedPrefix)
+  );
+
+  if (hasInvalidUrl) {
+    return { error: 'Invalid screenshot URL' };
+  }
 
   let buildId: string | null = null;
 

@@ -22,21 +22,13 @@ const ACCEPT_STRING = ACCEPTED_MIME_TYPES.join(',');
 
 type UploadedScreenshot = {
   url: string;
-  /** Storage path used to identify the file (for potential future deletion). */
+  /** Storage path used for deletion. */
   path: string;
-};
-
-type UploadingFile = {
-  /** Temporary ID to key the loading indicator. */
-  id: string;
-  name: string;
 };
 
 type UploadApiResponse = {
-  signedUrl: string;
   token: string;
   path: string;
-  contentType: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -60,7 +52,7 @@ export function ScreenshotUpload({
 }: ScreenshotUploadProps) {
   const supabase = createClient();
   const [screenshots, setScreenshots] = useState<UploadedScreenshot[]>([]);
-  const [uploading, setUploading] = useState<UploadingFile[]>([]);
+  const [uploading, setUploading] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -122,6 +114,12 @@ export function ScreenshotUpload({
 
       setError(null);
 
+      // Guard: no slots available
+      if (remainingSlots <= 0) {
+        setError('Maximum screenshots reached');
+        return;
+      }
+
       // Validate total count
       const filesToProcess = Array.from(files).slice(0, remainingSlots);
       if (files.length > remainingSlots) {
@@ -132,18 +130,25 @@ export function ScreenshotUpload({
 
       // Validate each file before uploading
       const validFiles: File[] = [];
+      const validationErrors: string[] = [];
       for (const file of filesToProcess) {
         if (!ACCEPTED_MIME_TYPES.includes(file.type as MimeType)) {
-          setError('Only PNG, JPEG, GIF, and WebP images are allowed');
+          validationErrors.push(
+            'Only PNG, JPEG, GIF, and WebP images are allowed'
+          );
           continue;
         }
         if (file.size > MAX_FILE_SIZE_BYTES) {
-          setError(
+          validationErrors.push(
             `"${file.name}" exceeds 5 MB. Please choose a smaller file.`
           );
           continue;
         }
         validFiles.push(file);
+      }
+
+      if (validationErrors.length > 0) {
+        setError(validationErrors.join('. '));
       }
 
       if (validFiles.length === 0) {
@@ -155,11 +160,8 @@ export function ScreenshotUpload({
       }
 
       // Create loading entries for each file
-      const uploadingEntries: UploadingFile[] = validFiles.map((file) => ({
-        id: crypto.randomUUID(),
-        name: file.name,
-      }));
-      setUploading((prev) => [...prev, ...uploadingEntries]);
+      const uploadingIds = validFiles.map(() => crypto.randomUUID());
+      setUploading((prev) => [...prev, ...uploadingIds]);
 
       // Upload all valid files concurrently
       const results = await Promise.allSettled(
@@ -182,11 +184,7 @@ export function ScreenshotUpload({
       }
 
       // Update state
-      setUploading((prev) =>
-        prev.filter(
-          (entry) => !uploadingEntries.some((ue) => ue.id === entry.id)
-        )
-      );
+      setUploading((prev) => prev.filter((id) => !uploadingIds.includes(id)));
 
       if (errors.length > 0) {
         setError(errors.join('. '));
@@ -203,7 +201,7 @@ export function ScreenshotUpload({
         fileInputRef.current.value = '';
       }
     },
-    [remainingSlots, uploadFile, screenshots, onUrlsChange]
+    [screenshots, remainingSlots, uploadFile, onUrlsChange]
   );
 
   // -------------------------------------------------------------------------
@@ -211,12 +209,22 @@ export function ScreenshotUpload({
   // -------------------------------------------------------------------------
 
   const removeScreenshot = useCallback(
-    (path: string) => {
-      const updated = screenshots.filter((s) => s.path !== path);
-      setScreenshots(updated);
-      onUrlsChange(updated.map((s) => s.url));
+    async (path: string) => {
+      // Delete the file from Supabase Storage to avoid orphaned files
+      const { error: removeError } = await supabase.storage
+        .from(BUCKET_NAME)
+        .remove([path]);
+
+      if (removeError) {
+        setError(`Failed to delete screenshot: ${removeError.message}`);
+        return;
+      }
+
+      const filtered = screenshots.filter((s) => s.path !== path);
+      setScreenshots(filtered);
+      onUrlsChange(filtered.map((s) => s.url));
     },
-    [screenshots, onUrlsChange]
+    [supabase, screenshots, onUrlsChange]
   );
 
   // -------------------------------------------------------------------------
@@ -256,9 +264,9 @@ export function ScreenshotUpload({
           ))}
 
           {/* Loading placeholders for in-progress uploads */}
-          {uploading.map((entry) => (
+          {uploading.map((id) => (
             <div
-              key={entry.id}
+              key={id}
               className="flex aspect-video items-center justify-center rounded-md border bg-muted"
             >
               <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
