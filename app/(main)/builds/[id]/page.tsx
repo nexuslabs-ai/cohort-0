@@ -2,6 +2,7 @@ import { ExternalLinkIcon } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { ScreenshotGallery } from '@/components/builds/screenshot-gallery';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { getUser } from '@/lib/auth';
@@ -88,13 +89,9 @@ export default async function BuildDetailPage({
       </p>
 
       {/* Screenshots */}
-      {/* TODO: ScreenshotGallery — Task 3 */}
-      {sortedScreenshots.length > 0 && (
-        <div
-          className="mt-8"
-          data-screenshots={JSON.stringify(sortedScreenshots)}
-        />
-      )}
+      <div className="mt-8">
+        <ScreenshotGallery screenshots={sortedScreenshots} />
+      </div>
 
       {/* AI tools */}
       {build.ai_tools.length > 0 && (
