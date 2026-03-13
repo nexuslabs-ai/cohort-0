@@ -10,9 +10,8 @@ const buildTypeValues = Constants.public.Enums.build_type;
 
 const optionalUrl = z
   .string()
-  .url({ error: 'Please enter a valid URL' })
-  .optional()
-  .or(z.literal(''));
+  .transform((v) => (v === '' ? undefined : v))
+  .pipe(z.string().url({ error: 'Please enter a valid URL' }).optional());
 
 export const buildFormSchema = z.object({
   title: z
@@ -34,6 +33,14 @@ export const buildFormSchema = z.object({
   tech_stack_tag_ids: z.array(
     z.string().uuid({ error: 'Each tag must be a valid ID' })
   ),
+  screenshot_urls: z
+    .array(z.string().url({ error: 'Each screenshot must be a valid URL' }))
+    .min(1, { error: 'At least 1 screenshot is required' })
+    .max(5, { error: 'Maximum 5 screenshots allowed' }),
 });
 
+/** What the form fields hold before Zod transforms run (e.g. empty strings). */
+export type BuildFormInput = z.input<typeof buildFormSchema>;
+
+/** What `safeParse` returns after transforms (e.g. empty strings become undefined). */
 export type BuildFormData = z.infer<typeof buildFormSchema>;
