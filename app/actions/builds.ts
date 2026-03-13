@@ -7,6 +7,7 @@ import { buildRoute, Routes } from '@/lib/constants/routes';
 import { BUCKET_NAME } from '@/lib/constants/storage';
 import { clientEnv } from '@/lib/env.client';
 import { createBuildWithRelations, deleteBuild } from '@/lib/queries/builds';
+import { createClient } from '@/lib/supabase/server';
 import { type BuildFormData, buildFormSchema } from '@/lib/validations/build';
 
 /**
@@ -90,6 +91,35 @@ export async function deleteBuildAction(buildId: string) {
   await requireUser();
 
   try {
+    const supabase = await createClient();
+
+    // 1. Fetch screenshot URLs before deleting — the DB rows cascade-delete
+    //    when the build is removed, so we must grab them first.
+    const { data: screenshots } = await supabase
+      .from('build_screenshots')
+      .select('url')
+      .eq('build_id', buildId);
+
+    // 2. Delete the files from storage (best-effort — don't block deletion
+    //    if storage cleanup fails; the DB row is the source of truth).
+    if (screenshots && screenshots.length > 0) {
+      const storagePrefix = `${clientEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/`;
+      const paths = screenshots
+        .map((s) => s.url.replace(storagePrefix, ''))
+        .filter((p) => p.length > 0);
+
+      if (paths.length > 0) {
+        const { error: storageError } = await supabase.storage
+          .from(BUCKET_NAME)
+          .remove(paths);
+
+        if (storageError) {
+          console.error('Failed to delete screenshot files:', storageError);
+        }
+      }
+    }
+
+    // 3. Delete the build — DB cascade removes the build_screenshots rows.
     const { error } = await deleteBuild(buildId);
 
     if (error) {
