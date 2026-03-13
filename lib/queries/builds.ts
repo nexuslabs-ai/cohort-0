@@ -62,10 +62,15 @@ export async function getBuildById(id: string) {
     .from('builds')
     .select(BUILD_WITH_DETAILS_SELECT)
     .eq('id', id)
-    .single();
+    .maybeSingle();
 
+  // maybeSingle() returns null data (no error) when the row doesn't exist,
+  // and only errors on real DB failures — throw to bubble up to error.tsx.
   if (error) {
-    return { data: null, error };
+    throw error;
+  }
+  if (!data) {
+    return { data: null, error: null };
   }
 
   const build: BuildWithDetails = {

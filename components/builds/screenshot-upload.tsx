@@ -224,7 +224,15 @@ export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
     }
 
     if (newScreenshots.length > 0) {
-      updateScreenshots([...screenshots, ...newScreenshots]);
+      setScreenshots((prev) => {
+        const next = [...prev, ...newScreenshots];
+        form.setValue(
+          'screenshot_urls',
+          next.map((s) => s.url),
+          { shouldValidate: true }
+        );
+        return next;
+      });
     }
 
     // Reset input so the same file can be re-selected

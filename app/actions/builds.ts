@@ -41,8 +41,13 @@ export async function createBuildAction(data: BuildFormData) {
     return { error: 'Invalid form data' };
   }
 
-  const { ai_tool_ids, tech_stack_tag_ids, screenshot_urls, ...buildData } =
-    result.data;
+  const {
+    ai_tool_ids,
+    tech_stack_tag_ids,
+    screenshot_urls,
+    removed_screenshot_urls: _removed_screenshot_urls,
+    ...buildData
+  } = result.data;
 
   // Validate that all screenshot URLs originate from our Supabase Storage
   // bucket under the authenticated user's folder. This prevents injection
