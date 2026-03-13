@@ -96,6 +96,7 @@ export function BuildForm({
               (tag) => tag.id
             ),
             screenshot_urls: initialData.screenshots.map((s) => s.url),
+            removed_screenshot_urls: [],
           }
         : {
             title: '',
@@ -106,6 +107,7 @@ export function BuildForm({
             ai_tool_ids: [],
             tech_stack_tag_ids: [],
             screenshot_urls: [],
+            removed_screenshot_urls: [],
           },
   });
 
@@ -166,7 +168,7 @@ export function BuildForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Build Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select a build type" />
@@ -282,18 +284,11 @@ export function BuildForm({
         <FormField
           control={form.control}
           name="screenshot_urls"
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FormLabel>Screenshots</FormLabel>
               <FormControl>
-                <ScreenshotUpload
-                  onUrlsChange={field.onChange}
-                  initialScreenshots={
-                    isEditing && initialData
-                      ? initialData.screenshots.map((s) => s.url)
-                      : undefined
-                  }
-                />
+                <ScreenshotUpload />
               </FormControl>
               <FormMessage />
             </FormItem>

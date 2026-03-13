@@ -113,8 +113,13 @@ export async function updateBuildAction(buildId: string, data: BuildFormData) {
     return { error: 'Invalid form data' };
   }
 
-  const { ai_tool_ids, tech_stack_tag_ids, screenshot_urls, ...buildData } =
-    result.data;
+  const {
+    ai_tool_ids,
+    tech_stack_tag_ids,
+    screenshot_urls,
+    removed_screenshot_urls,
+    ...buildData
+  } = result.data;
 
   // Validate that all screenshot URLs originate from our Supabase Storage
   // bucket under the authenticated user's folder. This prevents injection
@@ -149,6 +154,32 @@ export async function updateBuildAction(buildId: string, data: BuildFormData) {
     }
 
     updatedBuildId = id;
+
+    // Delete removed screenshots from storage AFTER the DB transaction
+    // succeeds. This prevents orphaned references — if the user removed a
+    // pre-existing screenshot but the DB update failed, the file would still
+    // be intact and the old DB row would still reference it correctly.
+    if (removed_screenshot_urls.length > 0) {
+      const storagePaths = removed_screenshot_urls
+        .filter((url) => url.startsWith(allowedPrefix))
+        .map((url) => url.slice(allowedPrefix.length));
+
+      if (storagePaths.length > 0) {
+        const supabase = await createClient();
+        const { error: storageError } = await supabase.storage
+          .from(BUCKET_NAME)
+          .remove(storagePaths);
+
+        if (storageError) {
+          // Best-effort cleanup — log but don't fail the action since the
+          // DB update already succeeded.
+          console.error(
+            'Failed to delete removed screenshots from storage:',
+            storageError
+          );
+        }
+      }
+    }
   } catch (error) {
     console.error('updateBuildAction failed:', error);
     return { error: 'An unexpected error occurred' };

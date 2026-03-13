@@ -14,17 +14,13 @@ type EditBuildPageProps = {
 export default async function EditBuildPage({ params }: EditBuildPageProps) {
   const { id } = await params;
 
-  const [
-    user,
-    { data: build },
-    { data: aiTools, error: aiToolsError },
-    { data: techStackTags, error: techStackTagsError },
-  ] = await Promise.all([
-    requireUser(),
-    getBuildById(id),
-    getAiTools(),
-    getTechStackTags(),
-  ]);
+  const [user, { data: build }, { data: aiTools }, { data: techStackTags }] =
+    await Promise.all([
+      requireUser(),
+      getBuildById(id),
+      getAiTools(),
+      getTechStackTags(),
+    ]);
 
   if (!build) {
     notFound();
@@ -32,10 +28,6 @@ export default async function EditBuildPage({ params }: EditBuildPageProps) {
 
   if (build.user_id !== user.id) {
     redirect(buildRoute(build.id));
-  }
-
-  if (aiToolsError || techStackTagsError) {
-    throw new Error('Failed to load form data');
   }
 
   return (
