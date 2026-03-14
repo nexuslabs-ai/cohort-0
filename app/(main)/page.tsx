@@ -1,23 +1,17 @@
-import { getAiTools } from '@/lib/queries/ai-tools';
+import { BuildFeed } from '@/components/feed/build-feed';
+import { getBuilds } from '@/lib/queries/builds';
 
 export default async function HomePage() {
-  const { data, error } = await getAiTools();
+  const { data: builds, error } = await getBuilds();
 
   if (error) {
-    console.error('Failed to fetch AI tools:', error);
-
-    return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <p className="text-destructive">Database connection failed.</p>
-      </div>
-    );
+    throw error;
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <p className="text-muted-foreground">
-        Database connected. {data.length} AI tools loaded.
-      </p>
+    <div className="mx-auto max-w-5xl px-4 py-8">
+      <h1 className="mb-6 text-2xl font-bold">Builds</h1>
+      <BuildFeed builds={builds} />
     </div>
   );
 }
