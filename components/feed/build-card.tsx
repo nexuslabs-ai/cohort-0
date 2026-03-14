@@ -38,7 +38,9 @@ export function BuildCard({ build }: BuildCardProps) {
 
   const thumbnail =
     screenshots.length > 0
-      ? [...screenshots].sort((a, b) => a.display_order - b.display_order)[0]
+      ? screenshots.reduce((lowest, s) =>
+          s.display_order < lowest.display_order ? s : lowest
+        )
       : null;
 
   const visibleTools = aiTools.slice(0, MAX_VISIBLE_AI_TOOLS);
