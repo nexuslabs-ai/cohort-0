@@ -21,12 +21,15 @@ const BUILD_WITH_DETAILS_SELECT = `
   upvotes:upvotes(count)
 ` as const;
 
+/** Maximum number of builds returned per page. */
+const BUILDS_PAGE_SIZE = 20;
+
 /**
- * Fetches all builds for the feed, including the author profile,
+ * Fetches a page of builds for the feed, including the author profile,
  * screenshots, AI tools (via junction table), tech stack tags
  * (via junction table), and upvote count.
  *
- * Results are ordered by newest first.
+ * Results are ordered by newest first and limited to {@link BUILDS_PAGE_SIZE}.
  */
 export async function getBuilds() {
   const supabase = await createClient();
@@ -34,7 +37,8 @@ export async function getBuilds() {
   const { data, error } = await supabase
     .from('builds')
     .select(BUILD_WITH_DETAILS_SELECT)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(0, BUILDS_PAGE_SIZE - 1);
 
   if (error) {
     return { data: null, error };
