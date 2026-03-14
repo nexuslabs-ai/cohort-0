@@ -26,6 +26,8 @@ export default async function EditBuildPage({ params }: EditBuildPageProps) {
     notFound();
   }
 
+  // Builds are public, so redirecting non-owners to the view page is
+  // preferred over notFound() — 404 would be confusing for a publicly-visible build.
   if (build.user_id !== user.id) {
     redirect(buildRoute(build.id));
   }

@@ -54,6 +54,8 @@ export async function getBuilds() {
 /**
  * Fetches a single build by ID with all related data (profile,
  * screenshots, AI tools, tech stack tags, and upvote count).
+ *
+ * @throws {PostgrestError} When a database error occurs (not when a row is missing — missing rows return null data).
  */
 export async function getBuildById(id: string) {
   const supabase = await createClient();
@@ -144,14 +146,11 @@ export async function updateBuildWithRelations(params: {
     p_title: params.title,
     p_description: params.description,
     p_build_type: params.buildType,
-    // Explicit `null` (not `undefined`) so PostgREST sends JSON null and
-    // the SQL column is cleared when a user removes a URL during editing.
-    // The generated types model optional params as `?: string`, but the
-    // underlying SQL function accepts NULL — the double assertion bridges
-    // the gap between the runtime value (`string | null`) and the generated
-    // type (`string | undefined`).
-    p_live_url: (params.liveUrl ?? null) as unknown as string | undefined,
-    p_repo_url: (params.repoUrl ?? null) as unknown as string | undefined,
+    // `?? undefined` omits the key from the JSON payload, which triggers the
+    // SQL function's `DEFAULT NULL` — the same result as sending explicit null.
+    // This matches the pattern used by `createBuildWithRelations`.
+    p_live_url: params.liveUrl ?? undefined,
+    p_repo_url: params.repoUrl ?? undefined,
     p_ai_tool_ids: params.aiToolIds,
     p_tech_stack_tag_ids: params.techStackTagIds,
     p_screenshot_urls: params.screenshotUrls ?? [],

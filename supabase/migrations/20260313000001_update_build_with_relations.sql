@@ -42,6 +42,7 @@ BEGIN
   END IF;
 
   -- Update the builds row
+  -- updated_at is handled automatically by the set_updated_at BEFORE UPDATE trigger
   UPDATE public.builds
   SET
     title = p_title,

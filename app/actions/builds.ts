@@ -124,7 +124,7 @@ export async function updateBuildAction(buildId: string, data: BuildFormData) {
     ai_tool_ids,
     tech_stack_tag_ids,
     screenshot_urls,
-    removed_screenshot_urls,
+    removed_screenshot_urls: _removed_screenshot_urls,
     ...buildData
   } = result.data;
 
@@ -142,6 +142,20 @@ export async function updateBuildAction(buildId: string, data: BuildFormData) {
   if (hasInvalidUrl) {
     return { error: 'Invalid screenshot URL' };
   }
+
+  // Create the Supabase client once — reused for both the DB fetch and
+  // storage deletion below.
+  const supabase = await createClient();
+
+  // Fetch the build's current screenshots BEFORE the update so we can
+  // compute a server-side diff afterward. This prevents the client from
+  // being able to trick the server into deleting files from other builds
+  // (cross-build attack within the same user account).
+  const { data: currentScreenshots } = await supabase
+    .from('build_screenshots')
+    .select('url')
+    .eq('build_id', buildId);
+  const currentUrls = currentScreenshots?.map((s) => s.url) ?? [];
 
   let updatedBuildId: string | null = null;
 
@@ -164,17 +178,21 @@ export async function updateBuildAction(buildId: string, data: BuildFormData) {
 
     updatedBuildId = id;
 
+    // Compute the diff server-side: any URL that was in the DB before the
+    // update but is NOT in the new set of URLs must have been removed.
+    const newUrlSet = new Set(screenshotUrls);
+    const urlsToDelete = currentUrls.filter((url) => !newUrlSet.has(url));
+
     // Delete removed screenshots from storage AFTER the DB transaction
     // succeeds. This prevents orphaned references — if the user removed a
     // pre-existing screenshot but the DB update failed, the file would still
     // be intact and the old DB row would still reference it correctly.
-    if (removed_screenshot_urls.length > 0) {
-      const storagePaths = removed_screenshot_urls
+    if (urlsToDelete.length > 0) {
+      const storagePaths = urlsToDelete
         .filter((url) => url.startsWith(allowedPrefix))
         .map((url) => url.slice(allowedPrefix.length));
 
       if (storagePaths.length > 0) {
-        const supabase = await createClient();
         const { error: storageError } = await supabase.storage
           .from(BUCKET_NAME)
           .remove(storagePaths);
@@ -194,7 +212,7 @@ export async function updateBuildAction(buildId: string, data: BuildFormData) {
     return { error: 'An unexpected error occurred' };
   }
 
-  redirect(buildRoute(updatedBuildId));
+  redirect(buildRoute(updatedBuildId!));
 }
 
 /**

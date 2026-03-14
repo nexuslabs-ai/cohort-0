@@ -56,7 +56,6 @@ export function deriveStoragePath(publicUrl: string): string {
 
 export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
   const { control, getValues, setValue } = useFormContext<BuildFormInput>();
-  const supabase = createClient();
 
   // Single source of truth — no parallel useState needed.
   const { field } = useController({
@@ -84,6 +83,8 @@ export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
 
   const uploadFile = useCallback(
     async (file: File): Promise<ScreenshotEntry> => {
+      const supabase = createClient();
+
       // 1. Request a signed upload URL from our API
       const response = await fetch('/api/upload', {
         method: 'POST',
@@ -118,7 +119,7 @@ export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
 
       return { url: publicUrl, path };
     },
-    [supabase]
+    []
   );
 
   // -------------------------------------------------------------------------
@@ -236,6 +237,7 @@ export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
     } else {
       // Newly uploaded screenshot: safe to delete immediately since it
       // was uploaded during this form session and has no DB reference.
+      const supabase = createClient();
       const { error: removeError } = await supabase.storage
         .from(BUCKET_NAME)
         .remove([path]);
