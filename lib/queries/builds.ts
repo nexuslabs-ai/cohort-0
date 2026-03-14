@@ -54,6 +54,8 @@ export async function getBuilds() {
 /**
  * Fetches a single build by ID with all related data (profile,
  * screenshots, AI tools, tech stack tags, and upvote count).
+ *
+ * @throws {PostgrestError} When a database error occurs (not when a row is missing — missing rows return null data).
  */
 export async function getBuildById(id: string) {
   const supabase = await createClient();
@@ -62,10 +64,15 @@ export async function getBuildById(id: string) {
     .from('builds')
     .select(BUILD_WITH_DETAILS_SELECT)
     .eq('id', id)
-    .single();
+    .maybeSingle();
 
+  // maybeSingle() returns null data (no error) when the row doesn't exist,
+  // and only errors on real DB failures — throw to bubble up to error.tsx.
   if (error) {
-    return { data: null, error };
+    throw error;
+  }
+  if (!data) {
+    return { data: null, error: null };
   }
 
   const build: BuildWithDetails = {
@@ -102,6 +109,46 @@ export async function createBuildWithRelations(params: {
     p_title: params.title,
     p_description: params.description,
     p_build_type: params.buildType,
+    p_live_url: params.liveUrl ?? undefined,
+    p_repo_url: params.repoUrl ?? undefined,
+    p_ai_tool_ids: params.aiToolIds,
+    p_tech_stack_tag_ids: params.techStackTagIds,
+    p_screenshot_urls: params.screenshotUrls ?? [],
+  });
+}
+
+/**
+ * Updates an existing build along with its AI tool, tech stack tag,
+ * and screenshot associations in a single atomic database transaction.
+ *
+ * Uses a PostgreSQL function (`update_build_with_relations`) that
+ * deletes and re-inserts all junction/child rows, so the caller
+ * doesn't need to diff what changed -- just pass the full new state.
+ *
+ * The function uses `auth.uid()` internally to verify ownership,
+ * so the caller must be authenticated.
+ */
+export async function updateBuildWithRelations(params: {
+  buildId: string;
+  title: string;
+  description: string;
+  buildType: BuildType;
+  liveUrl?: string | null;
+  repoUrl?: string | null;
+  aiToolIds: string[];
+  techStackTagIds: string[];
+  screenshotUrls?: string[];
+}) {
+  const supabase = await createClient();
+
+  return supabase.rpc('update_build_with_relations', {
+    p_build_id: params.buildId,
+    p_title: params.title,
+    p_description: params.description,
+    p_build_type: params.buildType,
+    // `?? undefined` omits the key from the JSON payload, which triggers the
+    // SQL function's `DEFAULT NULL` — the same result as sending explicit null.
+    // This matches the pattern used by `createBuildWithRelations`.
     p_live_url: params.liveUrl ?? undefined,
     p_repo_url: params.repoUrl ?? undefined,
     p_ai_tool_ids: params.aiToolIds,
