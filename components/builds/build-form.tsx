@@ -12,7 +12,10 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { createBuildAction, updateBuildAction } from '@/app/actions/builds';
-import { ScreenshotUpload } from '@/components/builds/screenshot-upload';
+import {
+  deriveStoragePath,
+  ScreenshotUpload,
+} from '@/components/builds/screenshot-upload';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -95,7 +98,10 @@ export function BuildForm({
             tech_stack_tag_ids: initialData.tech_stack_tags.map(
               (tag) => tag.id
             ),
-            screenshot_urls: initialData.screenshots.map((s) => s.url),
+            screenshot_urls: initialData.screenshots.map((s) => ({
+              url: s.url,
+              path: deriveStoragePath(s.url),
+            })),
             removed_screenshot_urls: [],
           }
         : {

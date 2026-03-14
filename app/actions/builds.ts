@@ -54,7 +54,9 @@ export async function createBuildAction(data: BuildFormData) {
   // of arbitrary external URLs (tracking pixels, XSS via SVG, etc.).
   const allowedPrefix = `${clientEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${user.id}/`;
 
-  const hasInvalidUrl = screenshot_urls.some(
+  const screenshotUrls = screenshot_urls.map((s) => s.url);
+
+  const hasInvalidUrl = screenshotUrls.some(
     (url) => !url.startsWith(allowedPrefix)
   );
 
@@ -73,7 +75,7 @@ export async function createBuildAction(data: BuildFormData) {
       repoUrl: buildData.repo_url,
       aiToolIds: ai_tool_ids,
       techStackTagIds: tech_stack_tag_ids,
-      screenshotUrls: screenshot_urls,
+      screenshotUrls,
     });
 
     if (error || !id) {
@@ -131,7 +133,9 @@ export async function updateBuildAction(buildId: string, data: BuildFormData) {
   // of arbitrary external URLs (tracking pixels, XSS via SVG, etc.).
   const allowedPrefix = `${clientEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${user.id}/`;
 
-  const hasInvalidUrl = screenshot_urls.some(
+  const screenshotUrls = screenshot_urls.map((s) => s.url);
+
+  const hasInvalidUrl = screenshotUrls.some(
     (url) => !url.startsWith(allowedPrefix)
   );
 
@@ -151,7 +155,7 @@ export async function updateBuildAction(buildId: string, data: BuildFormData) {
       repoUrl: buildData.repo_url,
       aiToolIds: ai_tool_ids,
       techStackTagIds: tech_stack_tag_ids,
-      screenshotUrls: screenshot_urls,
+      screenshotUrls,
     });
 
     if (error || !id) {

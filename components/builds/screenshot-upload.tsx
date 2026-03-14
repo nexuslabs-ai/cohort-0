@@ -1,13 +1,13 @@
 import { ImagePlusIcon, Loader2Icon, XIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useRef, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { MimeType } from '@/lib/constants/mime-types';
 import { BUCKET_NAME } from '@/lib/constants/storage';
 import { createClient } from '@/lib/supabase/client';
-import type { BuildFormInput } from '@/lib/validations/build';
+import type { BuildFormInput, ScreenshotEntry } from '@/lib/validations/build';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -21,19 +21,13 @@ const ACCEPT_STRING = ACCEPTED_MIME_TYPES.join(',');
 // Types
 // ---------------------------------------------------------------------------
 
-type UploadedScreenshot = {
-  url: string;
-  /** Storage path used for deletion. */
-  path: string;
-};
-
 type UploadApiResponse = {
   token: string;
   path: string;
 };
 
 // ---------------------------------------------------------------------------
-// ScreenshotUpload
+// Helpers
 // ---------------------------------------------------------------------------
 
 /**
@@ -45,7 +39,7 @@ type UploadApiResponse = {
  * Returns the `{path}` portion, which is what the storage API needs
  * for operations like deletion.
  */
-function deriveStoragePath(publicUrl: string): string {
+export function deriveStoragePath(publicUrl: string): string {
   const marker = `/storage/v1/object/public/${BUCKET_NAME}/`;
   const index = publicUrl.indexOf(marker);
 
@@ -56,16 +50,21 @@ function deriveStoragePath(publicUrl: string): string {
   return publicUrl.slice(index + marker.length);
 }
 
+// ---------------------------------------------------------------------------
+// ScreenshotUpload
+// ---------------------------------------------------------------------------
+
 export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
-  const form = useFormContext<BuildFormInput>();
+  const { control, getValues, setValue } = useFormContext<BuildFormInput>();
   const supabase = createClient();
 
-  const [screenshots, setScreenshots] = useState<UploadedScreenshot[]>(() =>
-    (form.getValues('screenshot_urls') ?? []).map((url) => ({
-      url,
-      path: deriveStoragePath(url),
-    }))
-  );
+  // Single source of truth — no parallel useState needed.
+  const { field } = useController({
+    name: 'screenshot_urls',
+    control,
+  });
+
+  // Transient UI state — not part of the form data
   const [uploading, setUploading] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -73,23 +72,10 @@ export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
   // Track the initial set of screenshot URLs at mount time so we can
   // distinguish pre-existing screenshots from newly uploaded ones.
   const initialUrlsRef = useRef(
-    new Set(form.getValues('screenshot_urls') ?? [])
+    new Set(field.value.map((s: ScreenshotEntry) => s.url))
   );
 
-  /**
-   * Updates both local state and the form's `screenshot_urls` field in sync.
-   * Takes the next array directly (not a functional updater) so we can
-   * pass the same value to both targets.
-   */
-  function updateScreenshots(next: UploadedScreenshot[]) {
-    setScreenshots(next);
-    form.setValue(
-      'screenshot_urls',
-      next.map((s) => s.url),
-      { shouldValidate: true }
-    );
-  }
-
+  const screenshots = field.value;
   const remainingSlots = maxFiles - screenshots.length - uploading.length;
 
   // -------------------------------------------------------------------------
@@ -97,7 +83,7 @@ export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
   // -------------------------------------------------------------------------
 
   const uploadFile = useCallback(
-    async (file: File): Promise<UploadedScreenshot> => {
+    async (file: File): Promise<ScreenshotEntry> => {
       // 1. Request a signed upload URL from our API
       const response = await fetch('/api/upload', {
         method: 'POST',
@@ -201,7 +187,7 @@ export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
       validFiles.map((file) => uploadFile(file))
     );
 
-    const newScreenshots: UploadedScreenshot[] = [];
+    const newScreenshots: ScreenshotEntry[] = [];
     const errors: string[] = [];
 
     for (const result of results) {
@@ -224,15 +210,9 @@ export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
     }
 
     if (newScreenshots.length > 0) {
-      setScreenshots((prev) => {
-        const next = [...prev, ...newScreenshots];
-        form.setValue(
-          'screenshot_urls',
-          next.map((s) => s.url),
-          { shouldValidate: true }
-        );
-        return next;
-      });
+      // Pure update — no side effect inside a state updater.
+      // field.value is read from a ref, so it's always current.
+      field.onChange([...field.value, ...newScreenshots]);
     }
 
     // Reset input so the same file can be re-selected
@@ -251,9 +231,8 @@ export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
     if (isPreExisting) {
       // Pre-existing screenshot: do NOT delete from storage now.
       // Track the URL so the server action can delete after DB update.
-      const currentRemoved = form.getValues('removed_screenshot_urls') ?? [];
-      form.setValue('removed_screenshot_urls', [...currentRemoved, url]);
-      updateScreenshots(screenshots.filter((s) => s.path !== path));
+      const currentRemoved = getValues('removed_screenshot_urls') ?? [];
+      setValue('removed_screenshot_urls', [...currentRemoved, url]);
     } else {
       // Newly uploaded screenshot: safe to delete immediately since it
       // was uploaded during this form session and has no DB reference.
@@ -265,9 +244,11 @@ export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
         setError(`Failed to delete screenshot: ${removeError.message}`);
         return;
       }
-
-      updateScreenshots(screenshots.filter((s) => s.path !== path));
     }
+
+    // Read field.value directly — it's backed by a ref, always fresh even
+    // after the await above (fixes the stale-closure bug).
+    field.onChange(field.value.filter((s: ScreenshotEntry) => s.path !== path));
   }
 
   // -------------------------------------------------------------------------
@@ -282,7 +263,7 @@ export function ScreenshotUpload({ maxFiles = 5 }: { maxFiles?: number }) {
       {/* Preview grid */}
       {(screenshots.length > 0 || uploading.length > 0) && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {screenshots.map((screenshot) => (
+          {screenshots.map((screenshot: ScreenshotEntry) => (
             <div
               key={screenshot.path}
               className="group relative aspect-video overflow-hidden rounded-md border bg-muted"
