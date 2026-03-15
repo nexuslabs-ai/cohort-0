@@ -1,3 +1,3 @@
 # CONTRIBUTORS
-1. Sakshi
+1. Sakshi Gupta
 
