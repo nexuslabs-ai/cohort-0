@@ -1,2 +1,2 @@
 # CONTRIBUTORS
-1. Praful 
+1. Praful Jain
