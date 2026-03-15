@@ -1,1 +1,4 @@
 # CONTRIBUTORS
+
+1. Ritika
+
