@@ -1,6 +1,9 @@
-import { Github, Globe, Linkedin } from 'lucide-react';
+import { Github, Globe, Linkedin, PencilIcon } from 'lucide-react';
+import Link from 'next/link';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Routes } from '@/lib/constants/routes';
 import type { Profile } from '@/types';
 
 // ---------------------------------------------------------------------------
@@ -27,6 +30,7 @@ function XIcon({ className }: { className?: string }) {
 
 type ProfileHeaderProps = {
   profile: Profile;
+  isOwner?: boolean;
 };
 
 // ---------------------------------------------------------------------------
@@ -53,7 +57,10 @@ const SOCIAL_LINKS = [
  * and social links. All social/display fields are nullable — fields are
  * hidden rather than showing empty placeholders.
  */
-export function ProfileHeader({ profile }: ProfileHeaderProps) {
+export function ProfileHeader({
+  profile,
+  isOwner = false,
+}: ProfileHeaderProps) {
   const displayName = profile.display_name ?? 'Anonymous';
 
   const joinDate = new Date(profile.created_at).toLocaleDateString('en-US', {
@@ -86,6 +93,16 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
 
       {/* Social links — only rendered when at least one URL is present */}
       <SocialLinks profile={profile} />
+
+      {/* Edit Profile — only shown to the profile owner */}
+      {isOwner && (
+        <Button variant="outline" size="sm" asChild>
+          <Link href={Routes.PROFILE_SETTINGS}>
+            <PencilIcon />
+            Edit Profile
+          </Link>
+        </Button>
+      )}
     </div>
   );
 }
