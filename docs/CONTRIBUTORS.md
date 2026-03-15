@@ -1,3 +1,3 @@
 # CONTRIBUTORS
 
-1. Yash
+1. Yash aka Farzi Artist
