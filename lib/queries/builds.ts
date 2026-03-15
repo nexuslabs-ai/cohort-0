@@ -93,13 +93,10 @@ export async function getBuilds(filters?: FeedFilters) {
       return { data: null, error };
     }
 
-    const builds: BuildWithDetails[] = (data ?? []).map(
-      (build) =>
-        ({
-          ...build,
-          upvote_count: build.upvotes[0]?.count ?? 0,
-        }) as BuildWithDetails
-    );
+    const builds: BuildWithDetails[] = (data ?? []).map((build) => {
+      const { filter_ai: _filter_ai, ...rest } = build;
+      return { ...rest, upvote_count: build.upvotes[0]?.count ?? 0 };
+    });
 
     return { data: builds, error: null };
   }

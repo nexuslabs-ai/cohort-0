@@ -3,7 +3,11 @@ import { Suspense } from 'react';
 import { BuildCardSkeleton } from '@/components/feed/build-card-skeleton';
 import { BuildFeed } from '@/components/feed/build-feed';
 import { FeedFilters } from '@/components/feed/feed-filters';
-import { BUILD_TYPE_LABELS } from '@/lib/constants/builds';
+import {
+  AI_TOOL_PARAM,
+  BUILD_TYPE_LABELS,
+  BUILD_TYPE_PARAM,
+} from '@/lib/constants/builds';
 import { getAiTools } from '@/lib/queries/ai-tools';
 import { getBuilds } from '@/lib/queries/builds';
 import type { BuildType, FeedFilters as FeedFiltersType } from '@/types';
@@ -14,12 +18,6 @@ import type { BuildType, FeedFilters as FeedFiltersType } from '@/types';
 
 /** Number of skeleton cards shown while the feed is loading. */
 const SKELETON_COUNT = 6;
-
-/** URL search param key for build type filters. */
-const BUILD_TYPE_PARAM = 'buildType';
-
-/** URL search param key for AI tool filters. */
-const AI_TOOL_PARAM = 'aiTool';
 
 /** Set of valid build type values for validation. */
 const VALID_BUILD_TYPES = new Set<string>(Object.keys(BUILD_TYPE_LABELS));
@@ -141,13 +139,17 @@ export default async function HomePage({
       : undefined;
 
   // Fetch AI tools for the filter controls (server-side).
-  const { data: aiTools } = await getAiTools();
+  const { data: aiTools, error: aiToolsError } = await getAiTools();
+
+  if (aiToolsError) {
+    throw aiToolsError;
+  }
 
   // Serialize search params into a stable key so changing filters
   // triggers a new Suspense boundary and re-shows the skeleton.
   const suspenseKey = [
-    buildTypes.sort().join(','),
-    aiToolIds.sort().join(','),
+    [...buildTypes].sort().join(','),
+    [...aiToolIds].sort().join(','),
   ].join('|');
 
   return (

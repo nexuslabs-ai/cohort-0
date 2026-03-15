@@ -19,19 +19,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { BUILD_TYPE_LABELS } from '@/lib/constants/builds';
+import {
+  AI_TOOL_PARAM,
+  BUILD_TYPE_LABELS,
+  BUILD_TYPE_PARAM,
+} from '@/lib/constants/builds';
 import { cn } from '@/lib/utils';
 import type { AiTool, BuildType } from '@/types';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
-
-/** URL search param key for build type filters. */
-const BUILD_TYPE_PARAM = 'buildType';
-
-/** URL search param key for AI tool filters. */
-const AI_TOOL_PARAM = 'aiTool';
 
 /** All build type keys in display order. */
 const BUILD_TYPES = Object.keys(BUILD_TYPE_LABELS) as BuildType[];
