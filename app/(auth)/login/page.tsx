@@ -14,7 +14,7 @@ export default async function LoginPage({
   return (
     <div className="flex w-full max-w-sm flex-col gap-6">
       <div className="flex flex-col gap-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+        <h1 className="font-display text-3xl text-foreground">Welcome back</h1>
         <p className="text-sm text-muted-foreground">
           Sign in to your account to continue
         </p>
@@ -28,7 +28,7 @@ export default async function LoginPage({
         Don&apos;t have an account?{' '}
         <Link
           href={Routes.SIGNUP}
-          className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/80"
+          className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
         >
           Sign up
         </Link>

@@ -49,13 +49,13 @@ export function OAuthButtons() {
   return (
     <div className="flex flex-col gap-3">
       <form action={signInWithGoogle}>
-        <Button type="submit" variant="outline" className="w-full">
+        <Button type="submit" variant="outline" className="h-10 w-full">
           <GoogleIcon />
           Continue with Google
         </Button>
       </form>
       <form action={signInWithGithub}>
-        <Button type="submit" variant="outline" className="w-full">
+        <Button type="submit" variant="outline" className="h-10 w-full">
           <GithubIcon />
           Continue with GitHub
         </Button>

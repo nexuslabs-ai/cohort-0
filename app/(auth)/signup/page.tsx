@@ -14,7 +14,7 @@ export default async function SignupPage({
   return (
     <div className="flex w-full max-w-sm flex-col gap-6">
       <div className="flex flex-col gap-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="font-display text-3xl text-foreground">
           Create your account
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -30,7 +30,7 @@ export default async function SignupPage({
         Already have an account?{' '}
         <Link
           href={Routes.LOGIN}
-          className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/80"
+          className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
         >
           Sign in
         </Link>
