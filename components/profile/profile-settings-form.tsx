@@ -79,7 +79,7 @@ export function ProfileSettingsForm({ initialData }: ProfileSettingsFormProps) {
 
       const result = await updateProfileAction(formData);
 
-      if ('error' in result) {
+      if (!result.success) {
         toast.error(result.error);
         return;
       }

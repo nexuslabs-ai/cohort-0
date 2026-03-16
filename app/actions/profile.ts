@@ -8,12 +8,19 @@ import { createClient } from '@/lib/supabase/server';
 import { profileFormSchema } from '@/lib/validations/profile';
 
 /**
- * Builds the expected URL prefix for avatars uploaded by a given user.
+ * Returns the public URL prefix for the avatars bucket.
  * Any avatar_url that starts with this prefix was uploaded by us (not
  * an OAuth provider like Google or GitHub).
  */
+function avatarBucketPrefix(): string {
+  return `${clientEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET_NAME}/`;
+}
+
+/**
+ * Builds the expected URL prefix for avatars uploaded by a given user.
+ */
 function avatarStoragePrefix(userId: string): string {
-  return `${clientEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET_NAME}/${userId}/`;
+  return `${avatarBucketPrefix()}${userId}/`;
 }
 
 /**
@@ -33,9 +40,7 @@ function extractAvatarStoragePath(url: string, userId: string): string | null {
   }
 
   // Slice from the bucket name boundary so the result includes `{userId}/{filename}`.
-  const bucketPrefix = `${clientEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET_NAME}/`;
-
-  return url.slice(bucketPrefix.length);
+  return url.slice(avatarBucketPrefix().length);
 }
 
 /**
@@ -48,9 +53,12 @@ function extractAvatarStoragePath(url: string, userId: string): string | null {
  * 4. If the profile has an existing avatar from our storage, delete it
  * 5. Call updateProfile with the validated data
  *
- * Returns `{ error: string }` on failure or `{ success: true }` on success.
+ * Returns a discriminated union: `{ success: true }` on success,
+ * or `{ success: false; error: string }` on failure.
  */
-export async function updateProfileAction(formData: FormData) {
+export async function updateProfileAction(
+  formData: FormData
+): Promise<{ success: true } | { success: false; error: string }> {
   const user = await requireUser();
 
   // Parse form fields into a plain object for Zod validation
@@ -66,7 +74,7 @@ export async function updateProfileAction(formData: FormData) {
   const result = profileFormSchema.safeParse(rawData);
 
   if (!result.success) {
-    return { error: 'Invalid form data' };
+    return { success: false as const, error: 'Invalid form data' };
   }
 
   // avatar_url is handled outside the Zod schema (like screenshots in
@@ -79,13 +87,12 @@ export async function updateProfileAction(formData: FormData) {
   // the authenticated user's folder. External URLs (e.g. GitHub/Google OAuth
   // avatars) are allowed through — we don't control their origin.
   if (avatarUrlString) {
-    const bucketPrefix = `${clientEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET_NAME}/`;
-    const isOurStorage = avatarUrlString.startsWith(bucketPrefix);
+    const isOurStorage = avatarUrlString.startsWith(avatarBucketPrefix());
 
     if (isOurStorage) {
       const allowedPrefix = avatarStoragePrefix(user.id);
       if (!avatarUrlString.startsWith(allowedPrefix)) {
-        return { error: 'Invalid avatar URL' };
+        return { success: false as const, error: 'Invalid avatar URL' };
       }
     }
   }
@@ -107,7 +114,7 @@ export async function updateProfileAction(formData: FormData) {
     const { data: currentProfile } = await getProfileById(user.id);
 
     if (!currentProfile) {
-      return { error: 'Profile not found' };
+      return { success: false as const, error: 'Profile not found' };
     }
 
     // Delete the old avatar from storage if:
@@ -140,12 +147,15 @@ export async function updateProfileAction(formData: FormData) {
     const { error } = await updateProfile(user.id, profileData);
 
     if (error) {
-      return { error: error.message ?? 'Failed to update profile' };
+      return {
+        success: false as const,
+        error: error.message ?? 'Failed to update profile',
+      };
     }
 
     return { success: true as const };
   } catch (error) {
     console.error('updateProfileAction failed:', error);
-    return { error: 'An unexpected error occurred' };
+    return { success: false as const, error: 'An unexpected error occurred' };
   }
 }
