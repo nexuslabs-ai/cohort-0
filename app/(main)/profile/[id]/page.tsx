@@ -33,11 +33,23 @@ export default async function PublicProfilePage({
 
   const isOwner = user?.id === profile.id;
 
+  const safeBuilds = builds ?? [];
+  const buildsCount = safeBuilds.length;
+  const totalUpvotes = safeBuilds.reduce((sum, b) => sum + b.upvote_count, 0);
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8">
       <div className="flex flex-col gap-10">
-        <ProfileHeader profile={profile} isOwner={isOwner} />
-        <ProfileBuildList builds={builds ?? []} />
+        <ProfileHeader
+          profile={profile}
+          isOwner={isOwner}
+          buildsCount={buildsCount}
+          totalUpvotes={totalUpvotes}
+        />
+        <ProfileBuildList
+          builds={safeBuilds}
+          displayName={profile.display_name ?? 'this builder'}
+        />
       </div>
     </div>
   );

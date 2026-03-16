@@ -3,22 +3,14 @@ import Link from 'next/link';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { BUILD_TYPE_LABELS } from '@/lib/constants/builds';
+import { ImagePlaceholderIcon } from '@/components/ui/icons';
+import {
+  BUILD_TYPE_BADGE_CLASSES,
+  BUILD_TYPE_LABELS,
+} from '@/lib/constants/builds';
 import { buildRoute } from '@/lib/constants/routes';
 import { cn } from '@/lib/utils';
 import type { BuildWithDetails } from '@/types';
-
-// ---------------------------------------------------------------------------
-// Build type badge color map
-// ---------------------------------------------------------------------------
-
-const BUILD_TYPE_BADGE_CLASSES: Record<string, string> = {
-  app: 'bg-sky-50 text-sky-700 border border-sky-100',
-  feature: 'bg-violet-50 text-violet-700 border border-violet-100',
-  fix: 'bg-rose-50 text-rose-700 border border-rose-100',
-  automation: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
-  experiment: 'bg-amber-50 text-amber-700 border border-amber-100',
-};
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -80,22 +72,7 @@ export function BuildCard({ build }: BuildCardProps) {
                 backgroundColor: '#F4F4F5',
               }}
             >
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#A1A1AA"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="opacity-40"
-                aria-hidden="true"
-              >
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <polyline points="21 15 16 10 5 21" />
-              </svg>
+              <ImagePlaceholderIcon size={32} />
             </div>
           )}
         </div>

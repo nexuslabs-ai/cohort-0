@@ -3,7 +3,9 @@ import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
+import { HardhatIcon } from '@/components/ui/icons';
 import { Routes } from '@/lib/constants/routes';
+import { cn } from '@/lib/utils';
 import type { Profile } from '@/types';
 
 import { UserMenu } from './user-menu';
@@ -11,9 +13,10 @@ import { UserMenu } from './user-menu';
 interface NavbarProps {
   user: User | null;
   profile: Profile | null;
+  pathname?: string;
 }
 
-export function Navbar({ user, profile }: NavbarProps) {
+export function Navbar({ user, profile, pathname }: NavbarProps) {
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -21,22 +24,7 @@ export function Navbar({ user, profile }: NavbarProps) {
         <div className="flex items-center gap-3">
           <Link href={Routes.HOME} className="flex items-center gap-3">
             <div className="flex size-9 items-center justify-center rounded-lg bg-primary">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M2 18v1a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-1" />
-                <path d="M2 18h20" />
-                <path d="M4 18v-4a8 8 0 0 1 16 0v4" />
-                <path d="M8 18v-6a4 4 0 0 1 8 0v6" />
-              </svg>
+              <HardhatIcon size={20} />
             </div>
             <div>
               <span className="font-display text-lg leading-none text-foreground">
@@ -50,7 +38,12 @@ export function Navbar({ user, profile }: NavbarProps) {
 
           <Link
             href={Routes.FEED}
-            className="ml-4 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className={cn(
+              'ml-4 text-sm transition-colors hover:text-foreground',
+              pathname === Routes.FEED || pathname === Routes.HOME
+                ? 'font-medium text-foreground'
+                : 'text-muted-foreground'
+            )}
           >
             Feed
           </Link>

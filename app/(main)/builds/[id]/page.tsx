@@ -1,4 +1,4 @@
-import { ExternalLinkIcon } from 'lucide-react';
+import { ArrowLeftIcon, ExternalLinkIcon } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -6,19 +6,15 @@ import { BuildOwnerActions } from '@/components/builds/build-owner-actions';
 import { ScreenshotGallery } from '@/components/builds/screenshot-gallery';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { UpvoteIcon } from '@/components/ui/icons';
 import { getUser } from '@/lib/auth';
-import { BUILD_TYPE_LABELS } from '@/lib/constants/builds';
-import { profileRoute } from '@/lib/constants/routes';
+import {
+  BUILD_TYPE_BADGE_CLASSES,
+  BUILD_TYPE_LABELS,
+} from '@/lib/constants/builds';
+import { profileRoute, Routes } from '@/lib/constants/routes';
 import { getBuildById } from '@/lib/queries/builds';
 import { cn, isUuid } from '@/lib/utils';
-
-const BUILD_TYPE_BADGE_CLASSES: Record<string, string> = {
-  app: 'bg-sky-50 text-sky-700 border border-sky-100',
-  feature: 'bg-violet-50 text-violet-700 border border-violet-100',
-  fix: 'bg-rose-50 text-rose-700 border border-rose-100',
-  automation: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
-  experiment: 'bg-amber-50 text-amber-700 border border-amber-100',
-};
 
 type BuildDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -57,6 +53,14 @@ export default async function BuildDetailPage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <Link
+        href={Routes.FEED}
+        className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeftIcon className="size-4" />
+        Back to Feed
+      </Link>
+
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
         {/* -- Main Content -- */}
         <div className="lg:col-span-2">
@@ -154,6 +158,19 @@ export default async function BuildDetailPage({
 
         {/* -- Sidebar -- */}
         <div className="flex flex-col gap-4 lg:col-span-1">
+          {/* Upvote Widget */}
+          <div className="rounded-xl border border-border bg-card p-6 text-center">
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex size-14 items-center justify-center rounded-xl border-2 border-amber-600 bg-amber-50">
+                <UpvoteIcon size={24} className="text-amber-600" />
+              </div>
+              <span className="font-display text-2xl font-bold text-foreground">
+                {build.upvote_count}
+              </span>
+              <span className="text-xs text-muted-foreground">upvotes</span>
+            </div>
+          </div>
+
           {/* AI Tools card */}
           {build.ai_tools.length > 0 && (
             <div className="rounded-xl border border-border bg-card p-6">

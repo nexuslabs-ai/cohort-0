@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { AuthErrorAlert } from '@/components/auth/auth-error-alert';
 import { OAuthButtons } from '@/components/auth/oauth-buttons';
+import { HardhatIcon } from '@/components/ui/icons';
 import { Routes } from '@/lib/constants/routes';
 
 export default async function LoginPage({
@@ -12,33 +13,38 @@ export default async function LoginPage({
   const { error } = await searchParams;
 
   return (
-    <div className="w-full max-w-sm">
-      <div className="rounded-2xl border border-border bg-card p-8 shadow-none">
-        <div className="flex flex-col gap-6">
-          {/* Heading */}
-          <div className="flex flex-col gap-2 text-center">
-            <h1 className="font-display text-2xl text-foreground">
-              Welcome back
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Sign in to your account to continue
-            </p>
+    <div className="w-full max-w-md">
+      <div className="rounded-2xl border border-border bg-card p-8">
+        {/* Logo + heading */}
+        <div className="mb-8 text-center">
+          <div className="mb-4 inline-flex size-14 items-center justify-center rounded-xl bg-primary">
+            <HardhatIcon size={28} />
           </div>
-
-          {error && <AuthErrorAlert message={error} />}
-
-          <OAuthButtons />
-
-          <p className="text-center text-xs text-muted-foreground">
-            Don&apos;t have an account?{' '}
-            <Link
-              href={Routes.SIGNUP}
-              className="font-semibold text-primary transition-colors hover:text-primary/80"
-            >
-              Sign up
-            </Link>
+          <h1 className="mb-1 font-display text-2xl text-foreground">
+            Welcome back
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Sign in to your account to continue
           </p>
         </div>
+
+        {error && (
+          <div className="mb-6">
+            <AuthErrorAlert message={error} />
+          </div>
+        )}
+
+        <OAuthButtons />
+
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          Don&apos;t have an account?{' '}
+          <Link
+            href={Routes.SIGNUP}
+            className="font-semibold text-primary transition-colors hover:text-primary/80"
+          >
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   );

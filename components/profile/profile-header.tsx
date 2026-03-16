@@ -3,26 +3,10 @@ import Link from 'next/link';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { XTwitterIcon } from '@/components/ui/icons';
 import { Routes } from '@/lib/constants/routes';
+import { cn } from '@/lib/utils';
 import type { Profile } from '@/types';
-
-// ---------------------------------------------------------------------------
-// Icons
-// ---------------------------------------------------------------------------
-
-/** Inline X (formerly Twitter) logo — lucide-react removed brand icons. */
-function XIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
-    </svg>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Props
@@ -31,6 +15,8 @@ function XIcon({ className }: { className?: string }) {
 type ProfileHeaderProps = {
   profile: Profile;
   isOwner?: boolean;
+  buildsCount?: number;
+  totalUpvotes?: number;
 };
 
 // ---------------------------------------------------------------------------
@@ -43,7 +29,7 @@ type ProfileHeaderProps = {
  */
 const SOCIAL_LINKS = [
   { key: 'github_url', icon: Github, label: 'GitHub' },
-  { key: 'twitter_url', icon: XIcon, label: 'X (Twitter)' },
+  { key: 'twitter_url', icon: XTwitterIcon, label: 'X (Twitter)' },
   { key: 'linkedin_url', icon: Linkedin, label: 'LinkedIn' },
   { key: 'website_url', icon: Globe, label: 'Website' },
 ] as const;
@@ -53,64 +39,109 @@ const SOCIAL_LINKS = [
 // ---------------------------------------------------------------------------
 
 /**
- * Renders the profile header section: avatar, display name, bio, join date,
- * and social links. All social/display fields are nullable — fields are
+ * Renders the profile header section: card-wrapped horizontal layout with
+ * gradient cover, square-rounded avatar, display name, bio, social links,
+ * and a stats summary. All social/display fields are nullable — fields are
  * hidden rather than showing empty placeholders.
  */
 export function ProfileHeader({
   profile,
   isOwner = false,
+  buildsCount = 0,
+  totalUpvotes = 0,
 }: ProfileHeaderProps) {
   const displayName = profile.display_name ?? 'Anonymous';
 
-  const joinDate = new Date(profile.created_at).toLocaleDateString('en-US', {
-    month: 'long',
-    year: 'numeric',
-  });
-
   return (
-    <div className="flex flex-col items-center text-center">
-      {/* Cover area */}
-      <div className="h-28 w-full rounded-xl bg-muted" />
+    <div>
+      {/* Card wrapper */}
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        {/* Cover gradient */}
+        <div className="h-32 bg-gradient-to-r from-zinc-800 via-zinc-700 to-zinc-900" />
 
-      {/* Avatar — overlaps cover area with white ring */}
-      <Avatar className="-mt-12 size-24 ring-4 ring-background">
-        {profile.avatar_url && (
-          <AvatarImage src={profile.avatar_url} alt={displayName} />
-        )}
-        <AvatarFallback className="text-2xl">
-          {displayName.charAt(0).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
+        {/* Content area below cover */}
+        <div className="px-6 pb-6">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end">
+            {/* Left: Avatar + info */}
+            <div className="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:items-end">
+              {/* Avatar — overlaps cover with ring */}
+              <Avatar
+                className={cn(
+                  'size-24 -mt-12 shrink-0 rounded-2xl ring-4 ring-background shadow-lg'
+                )}
+              >
+                {profile.avatar_url && (
+                  <AvatarImage src={profile.avatar_url} alt={displayName} />
+                )}
+                <AvatarFallback className="rounded-2xl text-2xl">
+                  {displayName.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
 
-      {/* Display name */}
-      <h1 className="mt-4 font-display text-3xl tracking-tight">
-        {displayName}
-      </h1>
+              {/* Name, bio, and social links */}
+              <div className="min-w-0 pb-1">
+                <h1 className="font-display text-2xl text-foreground">
+                  {displayName}
+                </h1>
 
-      {/* Bio — only shown when present */}
-      {profile.bio && (
-        <p className="mt-2 max-w-md text-muted-foreground">{profile.bio}</p>
-      )}
+                {profile.bio && (
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {profile.bio}
+                  </p>
+                )}
 
-      {/* Join date */}
-      <p className="mt-3 font-mono text-sm text-muted-foreground">
-        Joined {joinDate}
-      </p>
+                {/* Social links — inline with text labels */}
+                <div className="mt-3">
+                  <SocialLinks profile={profile} />
+                </div>
 
-      {/* Social links — only rendered when at least one URL is present */}
-      <div className="mt-3">
-        <SocialLinks profile={profile} />
+                <p className="mt-2 font-mono text-xs text-muted-foreground">
+                  Joined{' '}
+                  {new Date(profile.created_at).toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+              </div>
+            </div>
+
+            {/* Right: Stats */}
+            <div className="flex shrink-0 items-center gap-6 pb-1">
+              <div className="text-center">
+                <div className="font-display text-2xl text-foreground">
+                  {buildsCount}
+                </div>
+                <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                  Builds
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="h-10 w-px bg-border" />
+
+              <div className="text-center">
+                <div className="font-display text-2xl text-foreground">
+                  {totalUpvotes}
+                </div>
+                <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                  Upvotes
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Edit Profile — only shown to the profile owner */}
+      {/* Edit Profile — below card, only shown to profile owner */}
       {isOwner && (
-        <Button className="mt-4" variant="outline" size="sm" asChild>
-          <Link href={Routes.PROFILE_SETTINGS}>
-            <PencilIcon />
-            Edit Profile
-          </Link>
-        </Button>
+        <div className="mt-4">
+          <Button variant="outline" size="sm" asChild>
+            <Link href={Routes.PROFILE_SETTINGS}>
+              <PencilIcon />
+              Edit Profile
+            </Link>
+          </Button>
+        </div>
       )}
     </div>
   );
@@ -128,17 +159,17 @@ function SocialLinks({ profile }: { profile: Profile }) {
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center gap-3">
       {links.map(({ key, icon: Icon, label }) => (
         <a
           key={key}
           href={profile[key]!}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-          aria-label={label}
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
-          <Icon className="size-5" />
+          <Icon className="size-3.5" />
+          {label}
         </a>
       ))}
     </div>
