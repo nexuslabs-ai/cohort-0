@@ -16,23 +16,47 @@ interface NavbarProps {
 export function Navbar({ user, profile }: NavbarProps) {
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <div className="flex items-center gap-6">
-          <Link
-            href={Routes.HOME}
-            className="font-display text-xl text-foreground"
-          >
-            Bob the Builder
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Logo + Tagline */}
+        <div className="flex items-center gap-3">
+          <Link href={Routes.HOME} className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-primary">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M2 18v1a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-1" />
+                <path d="M2 18h20" />
+                <path d="M4 18v-4a8 8 0 0 1 16 0v4" />
+                <path d="M8 18v-6a4 4 0 0 1 8 0v6" />
+              </svg>
+            </div>
+            <div>
+              <span className="font-display text-lg leading-none text-foreground">
+                Bob the Builder
+              </span>
+              <span className="mt-0.5 hidden text-[11px] tracking-wide text-muted-foreground sm:block font-mono">
+                Can we ship it? Yes we can.
+              </span>
+            </div>
           </Link>
 
           <Link
             href={Routes.FEED}
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="ml-4 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             Feed
           </Link>
         </div>
 
+        {/* Right side actions */}
         <div className="flex items-center gap-3">
           <Button asChild size="sm">
             <Link href={Routes.BUILD_NEW}>
