@@ -17,7 +17,7 @@ export default async function MainLayout({
   return (
     <div className="min-h-screen">
       <Navbar user={user} profile={profile} />
-      <main>{children}</main>
+      <main className="pb-16">{children}</main>
     </div>
   );
 }
