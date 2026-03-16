@@ -153,8 +153,23 @@ export default async function HomePage({
   ].join('|');
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="mb-6 font-display text-3xl text-foreground">Builds</h1>
+    <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mb-8">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+          <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            The Feed
+          </span>
+        </div>
+        <h1 className="font-display text-4xl text-foreground mb-2">
+          What builders are shipping
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Real work shipped with AI. No tutorials, no hype — proof of
+          what&apos;s possible.
+        </p>
+        <div className="mt-6 border-t border-border" />
+      </div>
 
       {/* FeedFilters uses useSearchParams() so it needs its own Suspense boundary */}
       <Suspense fallback={null}>
