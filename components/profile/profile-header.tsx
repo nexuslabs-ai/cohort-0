@@ -69,9 +69,12 @@ export function ProfileHeader({
   });
 
   return (
-    <div className="flex flex-col items-center gap-4 text-center">
-      {/* Avatar — size-20 override via className */}
-      <Avatar className="size-20">
+    <div className="flex flex-col items-center text-center">
+      {/* Cover area */}
+      <div className="h-28 w-full rounded-xl bg-muted" />
+
+      {/* Avatar — overlaps cover area with white ring */}
+      <Avatar className="-mt-12 size-24 ring-4 ring-background">
         {profile.avatar_url && (
           <AvatarImage src={profile.avatar_url} alt={displayName} />
         )}
@@ -81,24 +84,28 @@ export function ProfileHeader({
       </Avatar>
 
       {/* Display name */}
-      <h1 className="font-display text-3xl tracking-tight">{displayName}</h1>
+      <h1 className="mt-4 font-display text-3xl tracking-tight">
+        {displayName}
+      </h1>
 
       {/* Bio — only shown when present */}
       {profile.bio && (
-        <p className="max-w-md text-muted-foreground">{profile.bio}</p>
+        <p className="mt-2 max-w-md text-muted-foreground">{profile.bio}</p>
       )}
 
       {/* Join date */}
-      <p className="font-mono text-sm text-muted-foreground">
+      <p className="mt-3 font-mono text-sm text-muted-foreground">
         Joined {joinDate}
       </p>
 
       {/* Social links — only rendered when at least one URL is present */}
-      <SocialLinks profile={profile} />
+      <div className="mt-3">
+        <SocialLinks profile={profile} />
+      </div>
 
       {/* Edit Profile — only shown to the profile owner */}
       {isOwner && (
-        <Button variant="outline" size="sm" asChild>
+        <Button className="mt-4" variant="outline" size="sm" asChild>
           <Link href={Routes.PROFILE_SETTINGS}>
             <PencilIcon />
             Edit Profile

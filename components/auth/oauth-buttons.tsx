@@ -48,16 +48,19 @@ function GithubIcon() {
 export function OAuthButtons() {
   return (
     <div className="flex flex-col gap-3">
-      <form action={signInWithGoogle}>
-        <Button type="submit" variant="outline" className="h-10 w-full">
-          <GoogleIcon />
-          Continue with Google
-        </Button>
-      </form>
       <form action={signInWithGithub}>
-        <Button type="submit" variant="outline" className="h-10 w-full">
+        <Button
+          type="submit"
+          className="h-11 w-full bg-zinc-900 text-white hover:bg-zinc-700"
+        >
           <GithubIcon />
           Continue with GitHub
+        </Button>
+      </form>
+      <form action={signInWithGoogle}>
+        <Button type="submit" variant="outline" className="h-11 w-full">
+          <GoogleIcon />
+          Continue with Google
         </Button>
       </form>
     </div>
