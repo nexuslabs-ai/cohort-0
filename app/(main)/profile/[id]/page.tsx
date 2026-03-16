@@ -35,7 +35,7 @@ export default async function PublicProfilePage({
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="space-y-10">
+      <div className="flex flex-col gap-10">
         <ProfileHeader profile={profile} isOwner={isOwner} />
         <ProfileBuildList builds={builds ?? []} />
       </div>

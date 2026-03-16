@@ -91,7 +91,10 @@ export function ProfileSettingsForm({ initialData }: ProfileSettingsFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-6"
+      >
         {/* Avatar */}
         <div>
           <AvatarUpload value={avatarUrl} onChange={setAvatarUrl} />

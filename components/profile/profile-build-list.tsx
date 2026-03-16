@@ -24,7 +24,7 @@ export function ProfileBuildList({ builds }: ProfileBuildListProps) {
     <section>
       {/* Heading with count badge */}
       <div className="flex items-center gap-2">
-        <h2 className="text-xl font-semibold tracking-tight">Builds</h2>
+        <h2 className="font-display text-xl tracking-tight">Builds</h2>
         <Badge variant="secondary">{builds.length}</Badge>
       </div>
 

@@ -81,7 +81,7 @@ export function ProfileHeader({
       </Avatar>
 
       {/* Display name */}
-      <h1 className="text-2xl font-bold tracking-tight">{displayName}</h1>
+      <h1 className="font-display text-3xl tracking-tight">{displayName}</h1>
 
       {/* Bio — only shown when present */}
       {profile.bio && (
@@ -89,7 +89,9 @@ export function ProfileHeader({
       )}
 
       {/* Join date */}
-      <p className="text-sm text-muted-foreground">Joined {joinDate}</p>
+      <p className="font-mono text-sm text-muted-foreground">
+        Joined {joinDate}
+      </p>
 
       {/* Social links — only rendered when at least one URL is present */}
       <SocialLinks profile={profile} />
