@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2Icon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -19,6 +20,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { profileRoute } from '@/lib/constants/routes';
 import {
   type ProfileFormData,
   profileFormSchema,
@@ -39,6 +41,7 @@ type ProfileSettingsFormProps = {
 // ---------------------------------------------------------------------------
 
 export function ProfileSettingsForm({ initialData }: ProfileSettingsFormProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   // Avatar URL is managed outside the Zod schema (same pattern as
@@ -82,6 +85,7 @@ export function ProfileSettingsForm({ initialData }: ProfileSettingsFormProps) {
       }
 
       toast.success('Profile updated!');
+      router.push(profileRoute(initialData.id));
     });
   }
 

@@ -75,13 +75,18 @@ export async function updateProfileAction(formData: FormData) {
   const avatarUrlString =
     typeof avatarUrl === 'string' && avatarUrl.length > 0 ? avatarUrl : null;
 
-  // Validate that the avatar URL belongs to the authenticated user's
-  // storage folder. This prevents injection of arbitrary external URLs.
+  // If the avatar URL points to our own storage, validate it belongs to
+  // the authenticated user's folder. External URLs (e.g. GitHub/Google OAuth
+  // avatars) are allowed through — we don't control their origin.
   if (avatarUrlString) {
-    const allowedPrefix = avatarStoragePrefix(user.id);
+    const bucketPrefix = `${clientEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET_NAME}/`;
+    const isOurStorage = avatarUrlString.startsWith(bucketPrefix);
 
-    if (!avatarUrlString.startsWith(allowedPrefix)) {
-      return { error: 'Invalid avatar URL' };
+    if (isOurStorage) {
+      const allowedPrefix = avatarStoragePrefix(user.id);
+      if (!avatarUrlString.startsWith(allowedPrefix)) {
+        return { error: 'Invalid avatar URL' };
+      }
     }
   }
 
