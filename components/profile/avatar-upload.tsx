@@ -142,7 +142,7 @@ export function AvatarUpload({ value, onChange }: AvatarUploadProps) {
         type="button"
         disabled={uploading}
         onClick={() => fileInputRef.current?.click()}
-        className="group relative size-24 overflow-hidden rounded-full border-2 border-muted bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        className="group relative size-24 overflow-hidden rounded-full border-2 border-border bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         aria-label="Upload avatar"
       >
         {/* Current avatar or placeholder */}

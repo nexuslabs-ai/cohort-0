@@ -1,3 +1,4 @@
+import { Footer } from '@/components/layout/footer';
 import { Navbar } from '@/components/layout/navbar';
 import { getUser } from '@/lib/auth';
 import { getProfileById } from '@/lib/queries/profiles';
@@ -17,7 +18,8 @@ export default async function MainLayout({
   return (
     <div className="min-h-screen">
       <Navbar user={user} profile={profile} />
-      <main>{children}</main>
+      <main className="pb-16">{children}</main>
+      <Footer />
     </div>
   );
 }

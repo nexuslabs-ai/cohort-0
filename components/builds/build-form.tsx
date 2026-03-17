@@ -107,7 +107,7 @@ export function BuildForm({
         : {
             title: '',
             description: '',
-            build_type: 'app',
+            build_type: undefined,
             live_url: '',
             repo_url: '',
             ai_tool_ids: [],
@@ -141,8 +141,15 @@ export function BuildForm({
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input placeholder="My awesome build" {...field} />
+                <Input
+                  placeholder='e.g., "Built a habit tracker in 2 days with Claude"'
+                  {...field}
+                />
               </FormControl>
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                Be specific. What did you build and what was remarkable about
+                it?
+              </p>
               <FormMessage />
             </FormItem>
           )}
@@ -157,7 +164,7 @@ export function BuildForm({
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Tell the community what you built and how you built it..."
+                  placeholder="Tell the story: What was the problem? How did AI help? What was the outcome? Be honest about what worked and what didn't."
                   className="min-h-32"
                   {...field}
                 />
@@ -174,7 +181,10 @@ export function BuildForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Build Type</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value || undefined}
+              >
                 <FormControl>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select a build type" />
@@ -193,49 +203,52 @@ export function BuildForm({
           )}
         />
 
-        {/* Live URL */}
-        <FormField
-          control={form.control}
-          name="live_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Live URL{' '}
-                <span className="text-muted-foreground">(optional)</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="url"
-                  placeholder="https://my-project.vercel.app"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* URLs — side by side */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Live URL */}
+          <FormField
+            control={form.control}
+            name="live_url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Live URL{' '}
+                  <span className="text-muted-foreground">(optional)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://my-project.vercel.app"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {/* Repo URL */}
-        <FormField
-          control={form.control}
-          name="repo_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Repository URL{' '}
-                <span className="text-muted-foreground">(optional)</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="url"
-                  placeholder="https://github.com/you/your-project"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          {/* Repo URL */}
+          <FormField
+            control={form.control}
+            name="repo_url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Repository URL{' '}
+                  <span className="text-muted-foreground">(optional)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://github.com/you/your-project"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         {/* AI Tools (multi-select) */}
         <FormField
@@ -302,16 +315,23 @@ export function BuildForm({
         />
 
         {/* Submit */}
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending && <Loader2Icon className="animate-spin" />}
-          {isPending
-            ? isEditing
-              ? 'Saving...'
-              : 'Submitting...'
-            : isEditing
-              ? 'Save Changes'
-              : 'Submit Build'}
-        </Button>
+        <div className="pt-4">
+          <Button type="submit" className="w-full" disabled={isPending}>
+            {isPending && <Loader2Icon className="animate-spin" />}
+            {isPending
+              ? isEditing
+                ? 'Saving...'
+                : 'Shipping...'
+              : isEditing
+                ? 'Save Changes'
+                : 'Ship It'}
+          </Button>
+          {!isEditing && (
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              Your build will be visible to the community after submission.
+            </p>
+          )}
+        </div>
       </form>
     </Form>
   );

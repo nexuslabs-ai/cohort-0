@@ -3,9 +3,11 @@ import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
+import { HardhatIcon } from '@/components/ui/icons';
 import { Routes } from '@/lib/constants/routes';
 import type { Profile } from '@/types';
 
+import { NavLink } from './nav-link';
 import { UserMenu } from './user-menu';
 
 interface NavbarProps {
@@ -15,21 +17,30 @@ interface NavbarProps {
 
 export function Navbar({ user, profile }: NavbarProps) {
   return (
-    <nav className="border-b">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <div className="flex items-center gap-6">
-          <Link href={Routes.HOME} className="text-lg font-semibold">
-            Bob the Builder
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Logo + Tagline */}
+        <div className="flex items-center gap-3">
+          <Link href={Routes.HOME} className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <HardhatIcon size={20} />
+            </div>
+            <div>
+              <span className="font-display text-lg leading-none text-foreground">
+                Bob the Builder
+              </span>
+              <span className="mt-0.5 hidden text-[11px] tracking-wide text-muted-foreground sm:block font-mono">
+                Can we ship it? Yes we can.
+              </span>
+            </div>
           </Link>
 
-          <Link
-            href={Routes.FEED}
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
+          <NavLink href={Routes.FEED} activeOn={[Routes.HOME]} className="ml-4">
             Feed
-          </Link>
+          </NavLink>
         </div>
 
+        {/* Right side actions */}
         <div className="flex items-center gap-3">
           <Button asChild size="sm">
             <Link href={Routes.BUILD_NEW}>

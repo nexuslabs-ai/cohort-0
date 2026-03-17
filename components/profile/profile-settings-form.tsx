@@ -91,7 +91,10 @@ export function ProfileSettingsForm({ initialData }: ProfileSettingsFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-6"
+      >
         {/* Avatar */}
         <div>
           <AvatarUpload value={avatarUrl} onChange={setAvatarUrl} />
@@ -131,93 +134,103 @@ export function ProfileSettingsForm({ initialData }: ProfileSettingsFormProps) {
           )}
         />
 
-        {/* GitHub URL */}
-        <FormField
-          control={form.control}
-          name="github_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                GitHub URL{' '}
-                <span className="text-muted-foreground">(optional)</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="url"
-                  placeholder="https://github.com/username"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Section divider */}
+        <div className="border-t border-border pt-2">
+          <h3 className="font-display text-sm text-foreground">Social Links</h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Add your social profiles so other builders can find you.
+          </p>
+        </div>
 
-        {/* Twitter URL */}
-        <FormField
-          control={form.control}
-          name="twitter_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Twitter URL{' '}
-                <span className="text-muted-foreground">(optional)</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="url"
-                  placeholder="https://twitter.com/username"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* GitHub URL */}
+          <FormField
+            control={form.control}
+            name="github_url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  GitHub URL{' '}
+                  <span className="text-muted-foreground">(optional)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://github.com/username"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {/* LinkedIn URL */}
-        <FormField
-          control={form.control}
-          name="linkedin_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                LinkedIn URL{' '}
-                <span className="text-muted-foreground">(optional)</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="url"
-                  placeholder="https://linkedin.com/in/username"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          {/* Twitter URL */}
+          <FormField
+            control={form.control}
+            name="twitter_url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Twitter URL{' '}
+                  <span className="text-muted-foreground">(optional)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://twitter.com/username"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {/* Website URL */}
-        <FormField
-          control={form.control}
-          name="website_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Website URL{' '}
-                <span className="text-muted-foreground">(optional)</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="url"
-                  placeholder="https://yourwebsite.com"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          {/* LinkedIn URL */}
+          <FormField
+            control={form.control}
+            name="linkedin_url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  LinkedIn URL{' '}
+                  <span className="text-muted-foreground">(optional)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://linkedin.com/in/username"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Website URL */}
+          <FormField
+            control={form.control}
+            name="website_url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Website URL{' '}
+                  <span className="text-muted-foreground">(optional)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://yourwebsite.com"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         {/* Submit */}
         <Button type="submit" className="w-full" disabled={isPending}>
