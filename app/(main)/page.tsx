@@ -1,23 +1,186 @@
+import { Suspense } from 'react';
+
+import { BuildCardSkeleton } from '@/components/feed/build-card-skeleton';
+import { BuildFeed } from '@/components/feed/build-feed';
+import { FeedFilters } from '@/components/feed/feed-filters';
+import {
+  AI_TOOL_PARAM,
+  BUILD_TYPE_LABELS,
+  BUILD_TYPE_PARAM,
+} from '@/lib/constants/builds';
 import { getAiTools } from '@/lib/queries/ai-tools';
+import { getBuilds } from '@/lib/queries/builds';
+import type { BuildType, FeedFilters as FeedFiltersType } from '@/types';
 
-export default async function HomePage() {
-  const { data, error } = await getAiTools();
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
 
-  if (error) {
-    console.error('Failed to fetch AI tools:', error);
+/** Number of skeleton cards shown while the feed is loading. */
+const SKELETON_COUNT = 6;
 
-    return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <p className="text-destructive">Database connection failed.</p>
-      </div>
-    );
+/** Set of valid build type values for validation. */
+const VALID_BUILD_TYPES = new Set<string>(Object.keys(BUILD_TYPE_LABELS));
+
+// ---------------------------------------------------------------------------
+// Search param parsing helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Parses a comma-separated `buildType` param into valid BuildType values.
+ * Invalid values are silently dropped.
+ */
+function parseBuildTypes(raw: string | undefined): BuildType[] {
+  if (!raw) {
+    return [];
   }
 
+  return raw
+    .split(',')
+    .filter((value): value is BuildType => VALID_BUILD_TYPES.has(value));
+}
+
+/**
+ * Parses a comma-separated `aiTool` param into an array of IDs.
+ * Returns the raw split — server-side validation happens in the query
+ * (non-matching IDs simply return no results).
+ */
+function parseAiToolIds(raw: string | undefined): string[] {
+  if (!raw) {
+    return [];
+  }
+
+  return raw.split(',').filter(Boolean);
+}
+
+// ---------------------------------------------------------------------------
+// Feed (async, Suspense-ready)
+// ---------------------------------------------------------------------------
+
+/**
+ * Async server component that fetches and renders the build feed.
+ * Wrapped in a Suspense boundary by the parent page so Next.js can
+ * stream the skeleton fallback while data loads.
+ *
+ * Accepts optional filters that are forwarded to `getBuilds()`.
+ */
+async function Feed({ filters }: { filters?: FeedFiltersType }) {
+  const hasActiveFilters =
+    (filters?.buildTypes?.length ?? 0) > 0 ||
+    (filters?.aiToolIds?.length ?? 0) > 0;
+
+  const { data: builds, error } = await getBuilds(filters);
+
+  if (error) {
+    throw error;
+  }
+
+  return <BuildFeed builds={builds} hasActiveFilters={hasActiveFilters} />;
+}
+
+// ---------------------------------------------------------------------------
+// FeedSkeleton
+// ---------------------------------------------------------------------------
+
+function FeedSkeleton() {
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <p className="text-muted-foreground">
-        Database connected. {data.length} AI tools loaded.
-      </p>
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: SKELETON_COUNT }, (_, i) => (
+        <BuildCardSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// HomePage
+// ---------------------------------------------------------------------------
+
+/**
+ * Public home page that displays the build feed with filter controls.
+ *
+ * Auth note: This page is accessible to both authenticated and anonymous
+ * users. The `builds` table has a public SELECT RLS policy, so the feed
+ * query works without authentication. The `(main)` layout provides shared
+ * navigation but does not enforce auth.
+ *
+ * Filters are read from URL search params and applied server-side:
+ * - `?buildType=app,feature` — comma-separated build types
+ * - `?aiTool=uuid1,uuid2` — comma-separated AI tool IDs
+ */
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const resolvedParams = await searchParams;
+
+  // Parse filter values from URL search params.
+  // Values can be string | string[] | undefined — we only handle strings.
+  const rawBuildType =
+    typeof resolvedParams[BUILD_TYPE_PARAM] === 'string'
+      ? resolvedParams[BUILD_TYPE_PARAM]
+      : undefined;
+  const rawAiTool =
+    typeof resolvedParams[AI_TOOL_PARAM] === 'string'
+      ? resolvedParams[AI_TOOL_PARAM]
+      : undefined;
+
+  const buildTypes = parseBuildTypes(rawBuildType);
+  const aiToolIds = parseAiToolIds(rawAiTool);
+
+  // Build the filters object. Only include non-empty arrays.
+  const filters: FeedFiltersType | undefined =
+    buildTypes.length > 0 || aiToolIds.length > 0
+      ? {
+          ...(buildTypes.length > 0 && { buildTypes }),
+          ...(aiToolIds.length > 0 && { aiToolIds }),
+        }
+      : undefined;
+
+  // Fetch AI tools for the filter controls (server-side).
+  const { data: aiTools, error: aiToolsError } = await getAiTools();
+
+  if (aiToolsError) {
+    throw aiToolsError;
+  }
+
+  // Serialize search params into a stable key so changing filters
+  // triggers a new Suspense boundary and re-shows the skeleton.
+  const suspenseKey = [
+    [...buildTypes].sort().join(','),
+    [...aiToolIds].sort().join(','),
+  ].join('|');
+
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mb-8">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+          <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            The Feed
+          </span>
+        </div>
+        <h1 className="font-display text-4xl text-foreground mb-2">
+          What builders are shipping
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Real work shipped with AI. No tutorials, no hype — proof of
+          what&apos;s possible.
+        </p>
+        <div className="mt-6 border-t border-border" />
+      </div>
+
+      {/* FeedFilters uses useSearchParams() so it needs its own Suspense boundary */}
+      <Suspense fallback={null}>
+        <FeedFilters aiTools={aiTools ?? []} />
+      </Suspense>
+
+      <div className="mt-6">
+        <Suspense key={suspenseKey} fallback={<FeedSkeleton />}>
+          <Feed filters={filters} />
+        </Suspense>
+      </div>
     </div>
   );
 }

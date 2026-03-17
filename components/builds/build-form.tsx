@@ -11,8 +11,11 @@ import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { createBuildAction } from '@/app/actions/builds';
-import { ScreenshotUpload } from '@/components/builds/screenshot-upload';
+import { createBuildAction, updateBuildAction } from '@/app/actions/builds';
+import {
+  deriveStoragePath,
+  ScreenshotUpload,
+} from '@/components/builds/screenshot-upload';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -52,7 +55,7 @@ import {
   type BuildFormInput,
   buildFormSchema,
 } from '@/lib/validations/build';
-import type { AiTool, TechStackTag } from '@/types';
+import type { AiTool, BuildWithDetails, TechStackTag } from '@/types';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -61,32 +64,65 @@ import type { AiTool, TechStackTag } from '@/types';
 type BuildFormProps = {
   aiTools: AiTool[];
   techStackTags: TechStackTag[];
+  /** Whether the form is creating a new build or editing an existing one. */
+  mode?: 'create' | 'edit';
+  /** Existing build data to pre-populate in edit mode. */
+  initialData?: BuildWithDetails;
 };
 
 // ---------------------------------------------------------------------------
 // BuildForm
 // ---------------------------------------------------------------------------
 
-export function BuildForm({ aiTools, techStackTags }: BuildFormProps) {
+export function BuildForm({
+  aiTools,
+  techStackTags,
+  mode = 'create',
+  initialData,
+}: BuildFormProps) {
   const [isPending, startTransition] = useTransition();
+
+  const isEditing = mode === 'edit';
 
   const form = useForm<BuildFormInput, unknown, BuildFormData>({
     resolver: zodResolver(buildFormSchema),
-    defaultValues: {
-      title: '',
-      description: '',
-      build_type: 'app',
-      live_url: '',
-      repo_url: '',
-      ai_tool_ids: [],
-      tech_stack_tag_ids: [],
-      screenshot_urls: [],
-    },
+    defaultValues:
+      isEditing && initialData
+        ? {
+            title: initialData.title,
+            description: initialData.description,
+            build_type: initialData.build_type,
+            live_url: initialData.live_url ?? '',
+            repo_url: initialData.repo_url ?? '',
+            ai_tool_ids: initialData.ai_tools.map((tool) => tool.id),
+            tech_stack_tag_ids: initialData.tech_stack_tags.map(
+              (tag) => tag.id
+            ),
+            screenshot_urls: initialData.screenshots.map((s) => ({
+              url: s.url,
+              path: deriveStoragePath(s.url),
+            })),
+            removed_screenshot_urls: [],
+          }
+        : {
+            title: '',
+            description: '',
+            build_type: undefined,
+            live_url: '',
+            repo_url: '',
+            ai_tool_ids: [],
+            tech_stack_tag_ids: [],
+            screenshot_urls: [],
+            removed_screenshot_urls: [],
+          },
   });
 
   function onSubmit(data: BuildFormData) {
     startTransition(async () => {
-      const result = await createBuildAction(data);
+      const result =
+        isEditing && initialData
+          ? await updateBuildAction(initialData.id, data)
+          : await createBuildAction(data);
 
       if (result?.error) {
         toast.error(result.error);
@@ -105,8 +141,15 @@ export function BuildForm({ aiTools, techStackTags }: BuildFormProps) {
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input placeholder="My awesome build" {...field} />
+                <Input
+                  placeholder='e.g., "Built a habit tracker in 2 days with Claude"'
+                  {...field}
+                />
               </FormControl>
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                Be specific. What did you build and what was remarkable about
+                it?
+              </p>
               <FormMessage />
             </FormItem>
           )}
@@ -121,7 +164,7 @@ export function BuildForm({ aiTools, techStackTags }: BuildFormProps) {
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Tell the community what you built and how you built it..."
+                  placeholder="Tell the story: What was the problem? How did AI help? What was the outcome? Be honest about what worked and what didn't."
                   className="min-h-32"
                   {...field}
                 />
@@ -138,7 +181,10 @@ export function BuildForm({ aiTools, techStackTags }: BuildFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Build Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value || undefined}
+              >
                 <FormControl>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select a build type" />
@@ -157,49 +203,52 @@ export function BuildForm({ aiTools, techStackTags }: BuildFormProps) {
           )}
         />
 
-        {/* Live URL */}
-        <FormField
-          control={form.control}
-          name="live_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Live URL{' '}
-                <span className="text-muted-foreground">(optional)</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="url"
-                  placeholder="https://my-project.vercel.app"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* URLs — side by side */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Live URL */}
+          <FormField
+            control={form.control}
+            name="live_url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Live URL{' '}
+                  <span className="text-muted-foreground">(optional)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://my-project.vercel.app"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {/* Repo URL */}
-        <FormField
-          control={form.control}
-          name="repo_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Repository URL{' '}
-                <span className="text-muted-foreground">(optional)</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="url"
-                  placeholder="https://github.com/you/your-project"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          {/* Repo URL */}
+          <FormField
+            control={form.control}
+            name="repo_url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Repository URL{' '}
+                  <span className="text-muted-foreground">(optional)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    placeholder="https://github.com/you/your-project"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         {/* AI Tools (multi-select) */}
         <FormField
@@ -254,11 +303,11 @@ export function BuildForm({ aiTools, techStackTags }: BuildFormProps) {
         <FormField
           control={form.control}
           name="screenshot_urls"
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FormLabel>Screenshots</FormLabel>
               <FormControl>
-                <ScreenshotUpload onUrlsChange={field.onChange} />
+                <ScreenshotUpload />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -266,10 +315,23 @@ export function BuildForm({ aiTools, techStackTags }: BuildFormProps) {
         />
 
         {/* Submit */}
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending && <Loader2Icon className="animate-spin" />}
-          {isPending ? 'Submitting...' : 'Submit Build'}
-        </Button>
+        <div className="pt-4">
+          <Button type="submit" className="w-full" disabled={isPending}>
+            {isPending && <Loader2Icon className="animate-spin" />}
+            {isPending
+              ? isEditing
+                ? 'Saving...'
+                : 'Shipping...'
+              : isEditing
+                ? 'Save Changes'
+                : 'Ship It'}
+          </Button>
+          {!isEditing && (
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              Your build will be visible to the community after submission.
+            </p>
+          )}
+        </div>
       </form>
     </Form>
   );
