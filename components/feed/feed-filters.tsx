@@ -225,7 +225,7 @@ export function FeedFilters({ aiTools }: FeedFiltersProps) {
                               : 'opacity-50 [&_svg]:invisible'
                           )}
                         >
-                          <CheckIcon className="size-3" />
+                          <CheckIcon className="size-3 stroke-[3] text-primary-foreground" />
                         </div>
                         {tool.name}
                       </CommandItem>
