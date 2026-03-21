@@ -15,10 +15,12 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+// Plus Jakarta Sans is a variable font (weight axis 200–800).
+// Omitting `weight` downloads the single variable font file instead of
+// three separate static files, which is smaller and more flexible.
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta-sans',
   subsets: ['latin'],
-  weight: ['600', '700', '800'],
 });
 
 export const metadata: Metadata = {
