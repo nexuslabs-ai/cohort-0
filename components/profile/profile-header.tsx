@@ -55,9 +55,21 @@ export function ProfileHeader({
   return (
     <div>
       {/* Card wrapper */}
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-card">
         {/* Cover gradient */}
         <div className="h-32 bg-gradient-to-r from-zinc-800 via-zinc-700 to-zinc-900" />
+
+        {/* Edit Profile — top-right of card, only shown to profile owner */}
+        {isOwner && (
+          <div className="absolute top-4 right-4">
+            <Button variant="outline" size="sm" asChild>
+              <Link href={Routes.PROFILE_SETTINGS}>
+                <PencilIcon />
+                Edit Profile
+              </Link>
+            </Button>
+          </div>
+        )}
 
         {/* Content area below cover */}
         <div className="px-6 pb-6">
@@ -131,18 +143,6 @@ export function ProfileHeader({
           </div>
         </div>
       </div>
-
-      {/* Edit Profile — below card, only shown to profile owner */}
-      {isOwner && (
-        <div className="mt-4">
-          <Button variant="outline" size="sm" asChild>
-            <Link href={Routes.PROFILE_SETTINGS}>
-              <PencilIcon />
-              Edit Profile
-            </Link>
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
