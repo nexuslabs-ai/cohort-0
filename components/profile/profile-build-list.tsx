@@ -2,6 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { Badge } from '@/components/ui/badge';
+
+/** Max AI tool chips shown before collapsing into "+N" — matches build-card.tsx */
+const MAX_VISIBLE_AI_TOOLS = 3;
 import { CheckerboardPlaceholder } from '@/components/ui/checkerboard-placeholder';
 import { UpvoteIcon } from '@/components/ui/icons';
 import { AiToolChip } from '@/components/ui/tool-chip';
@@ -104,7 +107,7 @@ function ProfileBuildItem({ build }: { build: BuildWithDetails }) {
             >
               {BUILD_TYPE_LABELS[build.build_type]}
             </Badge>
-            {aiTools.slice(0, 3).map((tool) => (
+            {aiTools.slice(0, MAX_VISIBLE_AI_TOOLS).map((tool) => (
               <AiToolChip
                 key={tool.id}
                 name={tool.name}
@@ -112,9 +115,9 @@ function ProfileBuildItem({ build }: { build: BuildWithDetails }) {
                 size="sm"
               />
             ))}
-            {aiTools.length > 3 && (
+            {aiTools.length > MAX_VISIBLE_AI_TOOLS && (
               <Badge variant="outline" className="font-mono text-xs">
-                +{aiTools.length - 3}
+                +{aiTools.length - MAX_VISIBLE_AI_TOOLS}
               </Badge>
             )}
           </div>

@@ -1,12 +1,14 @@
 /**
  * ToolChip — icon + label chips for AI tools and tech stack tags.
  *
- * Uses simple-icons for brand logos. Unknown tools fall back to a plain
- * text chip so nothing ever breaks.
+ * Uses simple-icons for brand logos. Unknown tools fall back gracefully.
+ *
+ * IMPORTANT: Slug keys in AI_TOOL_ICONS and TECH_STACK_ICONS must match
+ * supabase/seed.sql — update both together when adding new tools/tags.
  */
 
 import type { LucideIcon } from 'lucide-react';
-import { BotIcon, ImageIcon, MicIcon, ZapIcon } from 'lucide-react';
+import { BotIcon, CodeIcon, ImageIcon, MicIcon, ZapIcon } from 'lucide-react';
 import type { SimpleIcon } from 'simple-icons';
 import {
   siClaude,
@@ -44,6 +46,7 @@ type IconDef =
 
 // ---------------------------------------------------------------------------
 // Icon maps (keyed by slug from the database)
+// Slugs must match supabase/seed.sql — update both together.
 // ---------------------------------------------------------------------------
 
 const AI_TOOL_ICONS: Record<string, IconDef> = {
@@ -82,6 +85,7 @@ const TECH_STACK_ICONS: Record<string, IconDef> = {
 
 // ---------------------------------------------------------------------------
 // Primitive: renders a single icon (simple-icons SVG, lucide, or emoji)
+// All icons are decorative — the chip label provides the accessible name.
 // ---------------------------------------------------------------------------
 
 function ChipIcon({
@@ -96,6 +100,7 @@ function ChipIcon({
   if (def.kind === 'emoji') {
     return (
       <span
+        aria-hidden="true"
         className={cn('leading-none', className)}
         style={{ fontSize: size }}
       >
@@ -106,18 +111,23 @@ function ChipIcon({
 
   if (def.kind === 'lucide') {
     const Icon = def.icon;
-    return <Icon className={className} style={{ width: size, height: size }} />;
+    return (
+      <Icon
+        aria-hidden="true"
+        className={className}
+        style={{ width: size, height: size }}
+      />
+    );
   }
 
-  // simple-icons SVG path
+  // simple-icons SVG — decorative, label comes from adjacent text
   return (
     <svg
-      role="img"
+      aria-hidden="true"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       style={{ width: size, height: size, fill: 'currentColor' }}
-      aria-label={def.icon.title}
     >
       <path d={def.icon.path} />
     </svg>
@@ -144,6 +154,8 @@ export function AiToolChip({ name, slug, size = 'md' }: AiToolChipProps) {
     <span
       className={cn(
         'inline-flex items-center gap-1.5 rounded-lg border font-medium',
+        // dark:text-amber-400 is intentional: amber-700 is too dark on dark bg.
+        // A semantic token for this amber shade is not yet in the design system.
         'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400',
         size === 'sm' ? 'px-2 py-0.5 font-mono text-xs' : 'px-3 py-1.5 text-sm'
       )}
@@ -152,6 +164,7 @@ export function AiToolChip({ name, slug, size = 'md' }: AiToolChipProps) {
         <ChipIcon def={iconDef} size={size === 'sm' ? 10 : 12} />
       ) : (
         <BotIcon
+          aria-hidden="true"
           style={{
             width: size === 'sm' ? 10 : 12,
             height: size === 'sm' ? 10 : 12,
@@ -184,10 +197,20 @@ export function TechStackChip({ name, slug, size = 'md' }: TechStackChipProps) {
         size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-xs'
       )}
     >
-      {iconDef && (
+      {iconDef ? (
         <ChipIcon
           def={iconDef}
           size={size === 'sm' ? 10 : 11}
+          className="shrink-0 opacity-70"
+        />
+      ) : (
+        // Fallback icon for unknown tech stack slugs
+        <CodeIcon
+          aria-hidden="true"
+          style={{
+            width: size === 'sm' ? 10 : 11,
+            height: size === 'sm' ? 10 : 11,
+          }}
           className="shrink-0 opacity-70"
         />
       )}
