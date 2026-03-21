@@ -2,8 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { Badge } from '@/components/ui/badge';
+
+/** Max AI tool chips shown before collapsing into "+N" — matches build-card.tsx */
+const MAX_VISIBLE_AI_TOOLS = 3;
 import { CheckerboardPlaceholder } from '@/components/ui/checkerboard-placeholder';
 import { UpvoteIcon } from '@/components/ui/icons';
+import { AiToolChip } from '@/components/ui/tool-chip';
 import {
   BUILD_TYPE_BADGE_CLASSES,
   BUILD_TYPE_LABELS,
@@ -94,7 +98,7 @@ function ProfileBuildItem({ build }: { build: BuildWithDetails }) {
 
         {/* Content */}
         <div className="min-w-0 flex-1">
-          <div className="mb-1 flex items-center gap-2">
+          <div className="mb-1 flex flex-wrap items-center gap-1.5">
             <Badge
               className={cn(
                 'font-mono text-xs',
@@ -103,10 +107,18 @@ function ProfileBuildItem({ build }: { build: BuildWithDetails }) {
             >
               {BUILD_TYPE_LABELS[build.build_type]}
             </Badge>
-            {aiTools.length > 0 && (
-              <span className="font-mono text-xs text-muted-foreground">
-                {aiTools.map((t) => t.name).join(', ')}
-              </span>
+            {aiTools.slice(0, MAX_VISIBLE_AI_TOOLS).map((tool) => (
+              <AiToolChip
+                key={tool.id}
+                name={tool.name}
+                slug={tool.slug}
+                size="sm"
+              />
+            ))}
+            {aiTools.length > MAX_VISIBLE_AI_TOOLS && (
+              <Badge variant="outline" className="font-mono text-xs">
+                +{aiTools.length - MAX_VISIBLE_AI_TOOLS}
+              </Badge>
             )}
           </div>
           <h4 className="truncate font-display text-base text-foreground">
