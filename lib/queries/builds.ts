@@ -47,7 +47,7 @@ const BUILD_WITH_DETAILS_AND_AI_FILTER_SELECT = `
 ` as const;
 
 /** Maximum number of builds returned per page. */
-const BUILDS_PAGE_SIZE = 20;
+export const BUILDS_PAGE_SIZE = 6;
 
 /**
  * Fetches a page of builds for the feed, including the author profile,
@@ -71,6 +71,11 @@ export async function getBuilds(filters?: FeedFilters) {
     : null;
   const activeAiToolIds = filters?.aiToolIds?.length ? filters.aiToolIds : null;
 
+  // Calculate range offsets for the requested page (1-based, defaults to 1).
+  const page = Math.max(1, filters?.page ?? 1);
+  const from = (page - 1) * BUILDS_PAGE_SIZE;
+  const to = from + BUILDS_PAGE_SIZE - 1;
+
   // When filtering by AI tool we use a separate code path that includes
   // an `!inner` join alias (`filter_ai`). This keeps both select strings
   // as compile-time literal types so Supabase's PostgREST type inference
@@ -78,19 +83,19 @@ export async function getBuilds(filters?: FeedFilters) {
   if (activeAiToolIds) {
     let query = supabase
       .from('builds')
-      .select(BUILD_WITH_DETAILS_AND_AI_FILTER_SELECT)
+      .select(BUILD_WITH_DETAILS_AND_AI_FILTER_SELECT, { count: 'exact' })
       .in('filter_ai.ai_tool_id', activeAiToolIds)
       .order('created_at', { ascending: false })
-      .range(0, BUILDS_PAGE_SIZE - 1);
+      .range(from, to);
 
     if (activeBuildTypes) {
       query = query.in('build_type', activeBuildTypes);
     }
 
-    const { data, error } = await query;
+    const { data, count, error } = await query;
 
     if (error) {
-      return { data: null, error };
+      return { data: null, count: 0, error };
     }
 
     const builds: BuildWithDetails[] = (data ?? []).map((build) => {
@@ -98,24 +103,24 @@ export async function getBuilds(filters?: FeedFilters) {
       return { ...rest, upvote_count: build.upvotes[0]?.count ?? 0 };
     });
 
-    return { data: builds, error: null };
+    return { data: builds, count: count ?? 0, error: null };
   }
 
   // No AI tool filter — use the standard select without the extra join.
   let query = supabase
     .from('builds')
-    .select(BUILD_WITH_DETAILS_SELECT)
+    .select(BUILD_WITH_DETAILS_SELECT, { count: 'exact' })
     .order('created_at', { ascending: false })
-    .range(0, BUILDS_PAGE_SIZE - 1);
+    .range(from, to);
 
   if (activeBuildTypes) {
     query = query.in('build_type', activeBuildTypes);
   }
 
-  const { data, error } = await query;
+  const { data, count, error } = await query;
 
   if (error) {
-    return { data: null, error };
+    return { data: null, count: 0, error };
   }
 
   const builds: BuildWithDetails[] = (data ?? []).map((build) => {
@@ -123,7 +128,7 @@ export async function getBuilds(filters?: FeedFilters) {
     return { ...rest, upvote_count: upvotes[0]?.count ?? 0 };
   });
 
-  return { data: builds, error: null };
+  return { data: builds, count: count ?? 0, error: null };
 }
 
 /**
