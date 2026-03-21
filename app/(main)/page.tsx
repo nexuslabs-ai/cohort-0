@@ -1,15 +1,18 @@
+import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 
 import { BuildCardSkeleton } from '@/components/feed/build-card-skeleton';
 import { BuildFeed } from '@/components/feed/build-feed';
 import { FeedFilters } from '@/components/feed/feed-filters';
+import { FeedPagination } from '@/components/feed/feed-pagination';
 import {
   AI_TOOL_PARAM,
   BUILD_TYPE_LABELS,
   BUILD_TYPE_PARAM,
+  PAGE_PARAM,
 } from '@/lib/constants/builds';
 import { getAiTools } from '@/lib/queries/ai-tools';
-import { getBuilds } from '@/lib/queries/builds';
+import { BUILDS_PAGE_SIZE, getBuilds } from '@/lib/queries/builds';
 import type { BuildType, FeedFilters as FeedFiltersType } from '@/types';
 
 // ---------------------------------------------------------------------------
@@ -53,6 +56,19 @@ function parseAiToolIds(raw: string | undefined): string[] {
   return raw.split(',').filter(Boolean);
 }
 
+/**
+ * Parses the `page` param into a 1-based page number.
+ * Invalid or missing values default to 1.
+ */
+function parsePage(raw: string | undefined): number {
+  if (!raw) {
+    return 1;
+  }
+
+  const parsed = parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed >= 1 ? parsed : 1;
+}
+
 // ---------------------------------------------------------------------------
 // Feed (async, Suspense-ready)
 // ---------------------------------------------------------------------------
@@ -64,18 +80,48 @@ function parseAiToolIds(raw: string | undefined): string[] {
  *
  * Accepts optional filters that are forwarded to `getBuilds()`.
  */
-async function Feed({ filters }: { filters?: FeedFiltersType }) {
+async function Feed({ filters }: { filters: FeedFiltersType }) {
   const hasActiveFilters =
-    (filters?.buildTypes?.length ?? 0) > 0 ||
-    (filters?.aiToolIds?.length ?? 0) > 0;
+    (filters.buildTypes?.length ?? 0) > 0 ||
+    (filters.aiToolIds?.length ?? 0) > 0;
 
-  const { data: builds, error } = await getBuilds(filters);
+  const { data: builds, count, error } = await getBuilds(filters);
 
   if (error) {
     throw error;
   }
 
-  return <BuildFeed builds={builds} hasActiveFilters={hasActiveFilters} />;
+  const currentPage = filters.page ?? 1;
+  const totalPages = Math.max(1, Math.ceil(count / BUILDS_PAGE_SIZE));
+
+  // Redirect to the last valid page if the requested page exceeds the total.
+  if (currentPage > totalPages && totalPages > 0) {
+    const params = new URLSearchParams();
+    if (filters.buildTypes?.length) {
+      params.set(BUILD_TYPE_PARAM, filters.buildTypes.join(','));
+    }
+    if (filters.aiToolIds?.length) {
+      params.set(AI_TOOL_PARAM, filters.aiToolIds.join(','));
+    }
+    if (totalPages > 1) {
+      params.set(PAGE_PARAM, String(totalPages));
+    }
+    const queryString = params.toString();
+    redirect(queryString ? `/?${queryString}` : '/');
+  }
+
+  return (
+    <>
+      <BuildFeed builds={builds} hasActiveFilters={hasActiveFilters} />
+      {totalPages > 1 && (
+        <FeedPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalCount={count}
+        />
+      )}
+    </>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -104,9 +150,11 @@ function FeedSkeleton() {
  * query works without authentication. The `(main)` layout provides shared
  * navigation but does not enforce auth.
  *
- * Filters are read from URL search params and applied server-side:
+ * Filters and pagination are read from URL search params and applied
+ * server-side:
  * - `?buildType=app,feature` — comma-separated build types
  * - `?aiTool=uuid1,uuid2` — comma-separated AI tool IDs
+ * - `?page=2` — 1-based page number (defaults to 1)
  */
 export default async function HomePage({
   searchParams,
@@ -125,18 +173,21 @@ export default async function HomePage({
     typeof resolvedParams[AI_TOOL_PARAM] === 'string'
       ? resolvedParams[AI_TOOL_PARAM]
       : undefined;
+  const rawPage =
+    typeof resolvedParams[PAGE_PARAM] === 'string'
+      ? resolvedParams[PAGE_PARAM]
+      : undefined;
 
   const buildTypes = parseBuildTypes(rawBuildType);
   const aiToolIds = parseAiToolIds(rawAiTool);
+  const page = parsePage(rawPage);
 
-  // Build the filters object. Only include non-empty arrays.
-  const filters: FeedFiltersType | undefined =
-    buildTypes.length > 0 || aiToolIds.length > 0
-      ? {
-          ...(buildTypes.length > 0 && { buildTypes }),
-          ...(aiToolIds.length > 0 && { aiToolIds }),
-        }
-      : undefined;
+  // Build the filters object. Always include page for pagination.
+  const filters: FeedFiltersType = {
+    ...(buildTypes.length > 0 && { buildTypes }),
+    ...(aiToolIds.length > 0 && { aiToolIds }),
+    page,
+  };
 
   // Fetch AI tools for the filter controls (server-side).
   const { data: aiTools, error: aiToolsError } = await getAiTools();
@@ -146,10 +197,11 @@ export default async function HomePage({
   }
 
   // Serialize search params into a stable key so changing filters
-  // triggers a new Suspense boundary and re-shows the skeleton.
+  // or page triggers a new Suspense boundary and re-shows the skeleton.
   const suspenseKey = [
     [...buildTypes].sort().join(','),
     [...aiToolIds].sort().join(','),
+    String(page),
   ].join('|');
 
   return (
