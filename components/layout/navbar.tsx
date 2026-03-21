@@ -43,14 +43,14 @@ export function Navbar({ user, profile }: NavbarProps) {
 
         {/* Right side actions */}
         <div className="flex items-center gap-3">
-          <ThemeToggle />
-
           <Button asChild size="sm">
             <Link href={Routes.BUILD_NEW}>
               <Plus data-icon="inline-start" />
               Submit Build
             </Link>
           </Button>
+
+          <ThemeToggle />
 
           {user ? (
             <UserMenu profile={profile} />
